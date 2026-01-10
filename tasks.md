@@ -6,14 +6,13 @@
 
 ## 0. Подготовка проекта
 
-* [ ] Создать monorepo структуру
+* [x] Создать monorepo структуру
 
   * /api — backend (NestJS)
   * /client — frontend (NextJS)
-* [ ] Настроить общий git-репозиторий
-* [ ] Настроить ESLint / Prettier (frontend + backend)
-* [ ] Настроить env-конфигурации (dev / prod)
-* [ ] Настроить Docker (опционально для MVP)
+* [x] Настроить общий git-репозиторий
+* [x] Настроить ESLint / Prettier (frontend + backend)
+* [x] Настроить env-конфигурации (dev / prod)
 
 ---
 
@@ -21,10 +20,10 @@
 
 ### 1.1 Инициализация
 
-* [ ] Создать NestJS проект
-* [ ] Подключить PostgreSQL
-* [ ] Настроить TypeORM или Prisma
-* [ ] Настроить миграции
+* [x] Создать NestJS проект
+* [x] Подключить PostgreSQL
+* [x] Настроить TypeORM или Prisma
+* [x] Настроить миграции
 * [ ] Настроить глобальный error handling
 * [ ] Настроить validation pipe
 
