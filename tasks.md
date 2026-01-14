@@ -24,12 +24,12 @@
 * [x] Подключить PostgreSQL
 * [x] Настроить TypeORM или Prisma
 * [x] Настроить миграции
-* [ ] Настроить глобальный error handling
+* [x] Настроить глобальный error handling
 * [ ] Настроить validation pipe
 
 ### 1.2 Общие модули
 
-* [ ] ConfigModule
+* [x] ConfigModule
 * [ ] Logger
 * [ ] Health check endpoint
 
