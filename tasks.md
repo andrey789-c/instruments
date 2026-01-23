@@ -25,13 +25,11 @@
 * [x] Настроить TypeORM или Prisma
 * [x] Настроить миграции
 * [x] Настроить глобальный error handling
-* [ ] Настроить validation pipe
+* [x] Настроить validation pipe
 
 ### 1.2 Общие модули
 
 * [x] ConfigModule
-* [ ] Logger
-* [ ] Health check endpoint
 
 ---
 
@@ -39,17 +37,17 @@
 
 ### 2.1 Auth
 
-* [ ] Модуль auth
-* [ ] Регистрация по номеру телефона + пароль
-* [ ] Хеширование паролей (bcrypt)
-* [ ] Логин (JWT)
+* [x] Модуль auth
+* [x] Регистрация по номеру телефона + пароль
+* [x] Хеширование паролей (bcrypt)
+* [x] Логин (JWT)
 * [ ] Refresh token (опционально)
-* [ ] Rate limiting на auth
+* [x] Rate limiting на auth
 
 ### 2.2 Подтверждение пользователя
 
-* [ ] Поле status (pending / approved / rejected)
-* [ ] Middleware/guard: запрет доступа без approved
+* [x] Поле status (pending / approved / rejected)
+* [x] Guard: запрет доступа без approved
 * [ ] API для подтверждения пользователя суперадмином
 
 ### 2.3 Пользователи и роли
