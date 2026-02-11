@@ -1,28 +1,29 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
-import { JwtModule } from "@nestjs/jwt";
-import { ConfigModule } from "@nestjs/config";
-import { PassportModule } from "@nestjs/passport";
-import { ThrottlerModule } from "@nestjs/throttler";
 import { PrismaModule } from "src/prisma/prisma.module";
+import { JwtModule } from "@nestjs/jwt";
+import { UsersModule } from "src/users/users.module";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { JwtStrategy } from "./jwt.strategy";
+import { PassportModule } from "@nestjs/passport";
 
 @Module({
   imports: [
-    ConfigModule,
-    PassportModule,
-    JwtModule,
     PrismaModule,
-    ThrottlerModule.forRoot({
-      throttlers: [
-        {
-          ttl: 60000,
-          limit: 3,
-        },
-      ],
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>("JWT_ACCESS_SECRET"),
+        signOptions: { expiresIn: "60m" },
+      }),
+      inject: [ConfigService],
     }),
+    forwardRef(() => UsersModule),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

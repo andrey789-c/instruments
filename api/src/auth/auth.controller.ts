@@ -1,22 +1,28 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import { ApprovedUserGuard } from './auth.guard';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UsersService } from '../users/users.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private auth: AuthService, private users: UsersService) {}
 
-  @Post('register')
-  async register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  @Post('login')
+  async login(@Body() body: LoginDto) {
+    const user = await this.auth.validateUser(body.email, body.password);
+    if (!user) throw new Error('Invalid credentials');
+    return this.auth.login(user);
   }
 
-  @Throttle({default: {limit: 5, ttl: 6000}})
-  @Post('/login') 
-  async login(@Body() dto: LoginDto) {
-    return this.authService.login(dto)
+  // Создание пользователя — закрытый маршрут (доступен только супер-админу)
+  @UseGuards(JwtAuthGuard)
+  @Post('create')
+  async create(@Body() dto: CreateUserDto, @Request() req) {
+    const actor = req.user;
+
+    const created = await this.users.createUser(dto, actor);
+    return created;
   }
 }

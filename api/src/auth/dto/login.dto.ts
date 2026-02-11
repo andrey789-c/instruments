@@ -1,9 +1,13 @@
-import { IsString } from 'class-validator';
+import { IsString, IsEmail, MinLength, Matches } from 'class-validator';
 
 export class LoginDto {
-  @IsString()
-  phone: string;
+  @IsEmail({}, { message: 'Некорректный email адрес' })
+  email: string;
 
-  @IsString()
+  @IsString({ message: 'Пароль должен быть строкой' })
+  @MinLength(1, { message: 'Пароль не может быть пустым' })
+  @Matches(/^[^\s]+$/, {
+    message: 'Пароль не должен содержать пробелы',
+  })
   password: string;
 }

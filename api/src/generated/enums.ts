@@ -9,20 +9,10 @@
 * 🟢 You can import this file directly.
 */
 
-export const UserStatus = {
-  pending: 'pending',
-  approved: 'approved',
-  rejected: 'rejected'
+export const Role = {
+  USER: 'USER',
+  ADMIN: 'ADMIN',
+  SUPERADMIN: 'SUPERADMIN'
 } as const
 
-export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
-
-
-export const UserRole = {
-  superadmin: 'superadmin',
-  owner: 'owner',
-  admin: 'admin',
-  employee: 'employee'
-} as const
-
-export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+export type Role = (typeof Role)[keyof typeof Role]

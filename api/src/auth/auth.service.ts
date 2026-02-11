@@ -1,80 +1,52 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common";
-import { RegisterDto } from "./dto/register.dto";
-import * as bcrypt from "bcrypt";
+import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { LoginDto } from "./dto/login.dto";
-import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "src/prisma/prisma.service";
+import * as bcrypt from "bcrypt";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-  ) {
+  constructor(private prisma: PrismaService, private jwt: JwtService, private config: ConfigService,) {
+   
   }
 
-  async register(dto: RegisterDto) {
-    const { phone, password } = dto;
+  async validateUser(email: string, pass: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) return null;
+    const match = await bcrypt.compare(pass, user.password);
+    if (!match) return null;
+    const { password, ...rest } = user as any;
+    return rest;
+  }
 
-    const existingUser = await this.prisma.user.findUnique({
-      where: { phone },
-    });
+  async login(user: any) {
+    console.log('JWT_SECRET =', this.config.get('JWT_ACCESS_SECRET'));
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    return {
+      access_token: this.jwt.sign(payload),
+    };
+  }
 
-    console.log(existingUser);
-
-    if (existingUser) {
-      throw new BadRequestException("User already exists");
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await this.prisma.user.create({
+  async createUser(
+    data: { email: string; password: string; role?: string; ownerId?: string, organizationName: string },
+  ) {
+    const hashed = await bcrypt.hash(data.password, 10);
+    return this.prisma.user.create({
       data: {
-        phone,
-        password: hashedPassword,
-        role: "admin",
+        email: data.email,
+        password: hashed,
+        role: data.role as any,
+        organizationName: data.organizationName,
+        ownerId: data.ownerId,
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        organizationName: true,
+        ownerId: true,
+        createdAt: true,
       },
     });
-
-    return {
-      phone,
-    };
-  }
-
-  async login(dto: LoginDto) {
-    const { phone, password } = dto;
-
-    const user = await this.prisma.user.findUnique({ where: { phone } });
-    if (!user) throw new UnauthorizedException("Invalid credentials");
-
-    // 2. Проверка пароля
-    const isPasswordValid = await bcrypt.compare(
-      password,
-      user.password,
-    );
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException("Invalid credentials");
-    }
-
-    const payload = {
-      sub: user.id,
-      phone: user.phone,
-    };
-
-    const accessToken = this.jwtService.sign(payload, {
-      secret: this.configService.getOrThrow<string>("JWT_ACCESS_SECRET"),
-      expiresIn: "15m",
-    });
-
-    return {
-      accessToken,
-    };
   }
 }
