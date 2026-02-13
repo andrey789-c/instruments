@@ -5,7 +5,7 @@ import {
   MaxLength, 
   IsOptional, 
   IsIn,
-  Matches
+  IS_OPTIONAL
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -22,6 +22,7 @@ export class CreateUserDto {
   })
   role?: 'USER' | 'ADMIN' | 'SUPERADMIN';
 
-  @IsString({ message: 'Пароль должен быть строкой' })
+  @IsString({ message: 'Организация должна быть строкой' })
+  @IsOptional()
   organizationName: string
 }

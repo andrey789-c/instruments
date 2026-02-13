@@ -1,0 +1,270 @@
+{
+	"info": {
+		"name": "NestJS Auth Prisma Roles API",
+		"_postman_id": "d3c3f8a1-1234-4b9f-9f99-999999999999",
+		"description": "Auth system with superadmin, admin, user",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login Superadmin",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"root@example.com\",\n  \"password\": \"supersecurepassword\"\n}"
+						}
+					}
+				},
+				{
+					"name": "Login User/Admin",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user1@test.com\",\n  \"password\": \"123456\"\n}"
+						}
+					}
+				},
+				{
+					"name": "Create USER",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "create"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user1@test.com\",\n  \"password\": \"123456\",\n  \"role\": \"USER\"\n}"
+						}
+					}
+				},
+				{
+					"name": "Create ADMIN",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "create"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin1@test.com\",\n  \"password\": \"123456\",\n  \"role\": \"ADMIN\"\n}"
+						}
+					}
+				},
+				{
+					"name": "Create SUPERADMIN",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "create"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"super2@test.com\",\n  \"password\": \"123456\",\n  \"role\": \"SUPERADMIN\"\n}"
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Users List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": ["{{baseUrl}}"],
+							"path": ["users"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Tables",
+			"item": [
+				{
+					"name": "Get All Tables",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tables",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables"]
+						}
+					}
+				},
+				{
+					"name": "Get Table By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tables/{{tableId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", "{{tableId}}"]
+						}
+					}
+				},
+				{
+					"name": "Create Table (ADMIN, SUPERADMIN)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tables/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", "create"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Warehouse Tools\"\n}"
+						}
+					}
+				},
+				{
+					"name": "Update Table Name",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tables/update",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", "update"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tableId\": \"{{tableId}}\",\n  \"name\": \"Updated Table Name\"\n}"
+						}
+					}
+				},
+				{
+					"name": "Delete Table",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tables/delete",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", "delete"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{tableId}}\"\n}"
+						}
+					}
+				},
+				{
+					"name": "Add Item To Table",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tables/item/add",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", "item", "add"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tableId\": \"{{tableId}}\",\n  \"name\": \"Drill\",\n  \"description\": \"Bosch 1200W\",\n  \"price\": 120\n}"
+						}
+					}
+				},
+				{
+					"name": "Update Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tables/item/update",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", "item", "update"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"itemId\": \"{{itemId}}\",\n  \"name\": \"Drill Pro\",\n  \"description\": \"Bosch X\",\n  \"price\": 150\n}"
+						}
+					}
+				},
+				{
+					"name": "Delete Item",
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{accessToken}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tables/item/delete",
+							"host": ["{{baseUrl}}"],
+							"path": ["tables", "item", "delete"]
+						},
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{itemId}}\"\n}"
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{ "key": "baseUrl", "value": "http://localhost:8080/api" },
+		{ "key": "accessToken", "value": "" }
+	]
+}

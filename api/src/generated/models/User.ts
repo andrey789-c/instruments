@@ -208,6 +208,7 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   ownedUsers?: Prisma.UserListRelationFilter
+  tables?: Prisma.InventoryTableListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -221,6 +222,7 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   owner?: Prisma.UserOrderByWithRelationInput
   ownedUsers?: Prisma.UserOrderByRelationAggregateInput
+  tables?: Prisma.InventoryTableOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -237,6 +239,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   ownedUsers?: Prisma.UserListRelationFilter
+  tables?: Prisma.InventoryTableListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -277,6 +280,7 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   owner?: Prisma.UserCreateNestedOneWithoutOwnedUsersInput
   ownedUsers?: Prisma.UserCreateNestedManyWithoutOwnerInput
+  tables?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -289,6 +293,7 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ownedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutOwnerInput
+  tables?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type UserUpdateInput = {
@@ -301,6 +306,7 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneWithoutOwnedUsersNestedInput
   ownedUsers?: Prisma.UserUpdateManyWithoutOwnerNestedInput
+  tables?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -313,6 +319,7 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedUsers?: Prisma.UserUncheckedUpdateManyWithoutOwnerNestedInput
+  tables?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -395,6 +402,11 @@ export type UserMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
+}
+
 export type UserCreateNestedOneWithoutOwnedUsersInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutOwnedUsersInput, Prisma.UserUncheckedCreateWithoutOwnedUsersInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnedUsersInput
@@ -469,6 +481,20 @@ export type UserUncheckedUpdateManyWithoutOwnerNestedInput = {
   deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
+export type UserCreateNestedOneWithoutTablesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTablesInput, Prisma.UserUncheckedCreateWithoutTablesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTablesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutTablesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTablesInput, Prisma.UserUncheckedCreateWithoutTablesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTablesInput
+  upsert?: Prisma.UserUpsertWithoutTablesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTablesInput, Prisma.UserUpdateWithoutTablesInput>, Prisma.UserUncheckedUpdateWithoutTablesInput>
+}
+
 export type UserCreateWithoutOwnedUsersInput = {
   id?: string
   email: string
@@ -478,6 +504,7 @@ export type UserCreateWithoutOwnedUsersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner?: Prisma.UserCreateNestedOneWithoutOwnedUsersInput
+  tables?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
 }
 
 export type UserUncheckedCreateWithoutOwnedUsersInput = {
@@ -489,6 +516,7 @@ export type UserUncheckedCreateWithoutOwnedUsersInput = {
   organizationName: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  tables?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type UserCreateOrConnectWithoutOwnedUsersInput = {
@@ -505,6 +533,7 @@ export type UserCreateWithoutOwnerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ownedUsers?: Prisma.UserCreateNestedManyWithoutOwnerInput
+  tables?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
 }
 
 export type UserUncheckedCreateWithoutOwnerInput = {
@@ -516,6 +545,7 @@ export type UserUncheckedCreateWithoutOwnerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   ownedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutOwnerInput
+  tables?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
 }
 
 export type UserCreateOrConnectWithoutOwnerInput = {
@@ -548,6 +578,7 @@ export type UserUpdateWithoutOwnedUsersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneWithoutOwnedUsersNestedInput
+  tables?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOwnedUsersInput = {
@@ -559,6 +590,7 @@ export type UserUncheckedUpdateWithoutOwnedUsersInput = {
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tables?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type UserUpsertWithWhereUniqueWithoutOwnerInput = {
@@ -591,6 +623,70 @@ export type UserScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }
 
+export type UserCreateWithoutTablesInput = {
+  id?: string
+  email: string
+  password: string
+  role?: $Enums.Role
+  organizationName: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedUsersInput
+  ownedUsers?: Prisma.UserCreateNestedManyWithoutOwnerInput
+}
+
+export type UserUncheckedCreateWithoutTablesInput = {
+  id?: string
+  email: string
+  password: string
+  role?: $Enums.Role
+  ownerId?: string | null
+  organizationName: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutOwnerInput
+}
+
+export type UserCreateOrConnectWithoutTablesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutTablesInput, Prisma.UserUncheckedCreateWithoutTablesInput>
+}
+
+export type UserUpsertWithoutTablesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTablesInput, Prisma.UserUncheckedUpdateWithoutTablesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTablesInput, Prisma.UserUncheckedCreateWithoutTablesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutTablesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTablesInput, Prisma.UserUncheckedUpdateWithoutTablesInput>
+}
+
+export type UserUpdateWithoutTablesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneWithoutOwnedUsersNestedInput
+  ownedUsers?: Prisma.UserUpdateManyWithoutOwnerNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTablesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedUsers?: Prisma.UserUncheckedUpdateManyWithoutOwnerNestedInput
+}
+
 export type UserCreateManyOwnerInput = {
   id?: string
   email: string
@@ -610,6 +706,7 @@ export type UserUpdateWithoutOwnerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedUsers?: Prisma.UserUpdateManyWithoutOwnerNestedInput
+  tables?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOwnerInput = {
@@ -621,6 +718,7 @@ export type UserUncheckedUpdateWithoutOwnerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedUsers?: Prisma.UserUncheckedUpdateManyWithoutOwnerNestedInput
+  tables?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutOwnerInput = {
@@ -640,10 +738,12 @@ export type UserUncheckedUpdateManyWithoutOwnerInput = {
 
 export type UserCountOutputType = {
   ownedUsers: number
+  tables: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownedUsers?: boolean | UserCountOutputTypeCountOwnedUsersArgs
+  tables?: boolean | UserCountOutputTypeCountTablesArgs
 }
 
 /**
@@ -663,6 +763,13 @@ export type UserCountOutputTypeCountOwnedUsersArgs<ExtArgs extends runtime.Types
   where?: Prisma.UserWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountTablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InventoryTableWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -675,6 +782,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   owner?: boolean | Prisma.User$ownerArgs<ExtArgs>
   ownedUsers?: boolean | Prisma.User$ownedUsersArgs<ExtArgs>
+  tables?: boolean | Prisma.User$tablesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -717,6 +825,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.User$ownerArgs<ExtArgs>
   ownedUsers?: boolean | Prisma.User$ownedUsersArgs<ExtArgs>
+  tables?: boolean | Prisma.User$tablesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -731,6 +840,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     owner: Prisma.$UserPayload<ExtArgs> | null
     ownedUsers: Prisma.$UserPayload<ExtArgs>[]
+    tables: Prisma.$InventoryTablePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1137,6 +1247,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   owner<T extends Prisma.User$ownerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownerArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   ownedUsers<T extends Prisma.User$ownedUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownedUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tables<T extends Prisma.User$tablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryTablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1610,6 +1721,30 @@ export type User$ownedUsersArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.UserScalarFieldEnum | Prisma.UserScalarFieldEnum[]
+}
+
+/**
+ * User.tables
+ */
+export type User$tablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InventoryTable
+   */
+  select?: Prisma.InventoryTableSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InventoryTable
+   */
+  omit?: Prisma.InventoryTableOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InventoryTableInclude<ExtArgs> | null
+  where?: Prisma.InventoryTableWhereInput
+  orderBy?: Prisma.InventoryTableOrderByWithRelationInput | Prisma.InventoryTableOrderByWithRelationInput[]
+  cursor?: Prisma.InventoryTableWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InventoryTableScalarFieldEnum | Prisma.InventoryTableScalarFieldEnum[]
 }
 
 /**

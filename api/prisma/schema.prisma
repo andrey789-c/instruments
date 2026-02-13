@@ -25,10 +25,41 @@ model User {
   email            String   @unique
   password         String
   role             Role     @default(USER)
-  ownerId          String? // owner (superadmin) id — null для superadmin
+
+  ownerId          String?
   owner            User?    @relation("OwnedUsers", fields: [ownerId], references: [id])
   ownedUsers       User[]   @relation("OwnedUsers")
+
   organizationName String
+
+  tables           InventoryTable[]   // таблицы пользователя
+
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model InventoryTable {
+  id        String   @id @default(uuid())
+  name      String
+
+  ownerId   String
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  items     InventoryItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InventoryItem {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+
+  tableId     String
+  table       InventoryTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

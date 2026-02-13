@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from 'src/auth/dto/create-user.dto';
@@ -16,7 +16,7 @@ export class UsersService {
         throw new ForbiddenException('Only superadmin can create users/admins.');
       }
       // ownerId = actor.id
-      return this.auth.createUser({ ...dto, role, ownerId: actor.id });
+      return this.auth.createUser({ ...dto, role, ownerId: actor.id, organizationName: actor.organizationName });
     }
 
     // Если пытаются создать SUPERADMIN — разрешить только, если actor === SUPERADMIN (или сделать через seed)
@@ -24,8 +24,9 @@ export class UsersService {
       if (!actor || actor.role !== 'SUPERADMIN') {
         throw new ForbiddenException('Only superadmin can create another superadmin.');
       }
+      if(!dto.organizationName) throw new UnprocessableEntityException('Введите название Вашей организации')
       // ownerId stays null
-      return this.auth.createUser({ ...dto, role, ownerId: undefined });
+      return this.auth.createUser({ ...dto, role, ownerId: undefined,  });
     }
   }
 

@@ -6,13 +6,13 @@
 
 ## 0. Подготовка проекта
 
-* [ ] Создать monorepo структуру
+* [x] Создать monorepo структуру
 
   * /api — backend (NestJS)
   * /client — frontend (NextJS)
-* [ ] Настроить общий git-репозиторий
-* [ ] Настроить ESLint / Prettier (frontend + backend)
-* [ ] Настроить env-конфигурации (dev / prod)
+* [x] Настроить общий git-репозиторий
+* [x] Настроить ESLint / Prettier (frontend + backend)
+* [x] Настроить env-конфигурации (dev / prod)
 
 ---
 
@@ -20,16 +20,16 @@
 
 ### 1.1 Инициализация
 
-* [ ] Создать NestJS проект
-* [ ] Подключить PostgreSQL
-* [ ] Настроить TypeORM или Prisma
-* [ ] Настроить миграции
-* [ ] Настроить глобальный error handling
-* [ ] Настроить validation pipe
+* [x] Создать NestJS проект
+* [x] Подключить PostgreSQL
+* [x] Настроить TypeORM или Prisma
+* [x] Настроить миграции
+* [x] Настроить глобальный error handling
+* [x] Настроить validation pipe
 
 ### 1.2 Общие модули
 
-* [ ] ConfigModule
+* [x] ConfigModule
 
 ---
 
@@ -37,18 +37,12 @@
 
 ### 2.1 Auth
 
-* [ ] Модуль auth
-* [ ] Регистрация по номеру телефона + пароль
-* [ ] Хеширование паролей (bcrypt)
-* [ ] Логин (JWT)
-* [ ] Refresh token (опционально)
-* [ ] Rate limiting на auth
+* [x] Модуль auth
+* [x] Регистрация по номеру телефона + пароль
+* [x] Хеширование паролей (bcrypt)
+* [x] Логин (JWT)
 
-### 2.2 Подтверждение пользователя
 
-* [ ] Поле status (pending / approved / rejected)
-* [ ] Guard: запрет доступа без approved
-* [x] API для подтверждения пользователя суперадмином
 
 ### 2.3 Пользователи и роли
 
