@@ -1,8 +1,10 @@
-// shared/ui/ComparisonRow.jsx
-
-import { IComparisonRow } from "@/src/widgets/comparison-section/config/comparisons";
 import { CheckCircle2, XCircle } from "lucide-react";
 
+export interface IComparisonRow {
+  feature: string
+  us: string
+  crm: string
+}
 
 export function ComparisonRow({ feature, us, crm }: IComparisonRow) {
   return (

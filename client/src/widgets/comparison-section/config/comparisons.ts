@@ -1,9 +1,3 @@
-export interface IComparisonRow {
-  feature: string
-  us: string
-  crm: string
-}
-
 export const COMPARISON_ROWS = [
   {
     feature: "Цена",
