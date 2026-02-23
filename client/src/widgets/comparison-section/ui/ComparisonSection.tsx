@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { ComparisonRow } from "@/src/shared/ui";
-import { COMPARISON_ROWS } from "../../model/comparison-rows";
+import { COMPARISON_ROWS } from "../config/comparisons";
+
 
 
 export function ComparisonSection() {

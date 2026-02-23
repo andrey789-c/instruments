@@ -1,12 +1,7 @@
-import { ComparisonSection, HeroSection, PainPoints } from "@/src/_pages/home/ui";
+import { HomePage } from "@/src/_pages/home/ui";
+
 
 
 export default function Home() {
-  return (
-    <>
-      <HeroSection />
-      <PainPoints />
-      <ComparisonSection />
-    </>
-  );
+  return <HomePage />
 }

@@ -1,5 +1,6 @@
 // shared/ui/ComparisonRow.jsx
-import { IComparisonRow } from "@/src/_pages/home/model/comparison-rows";
+
+import { IComparisonRow } from "@/src/widgets/comparison-section/config/comparisons";
 import { CheckCircle2, XCircle } from "lucide-react";
 
 

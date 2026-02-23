@@ -1,7 +1,8 @@
 import { ArrowRight, Play, TrendingUp, Users } from "lucide-react";
-import { TablePreview } from "./TablePreview";
+
 import { Counter } from "@/src/shared/ui";
 import { Navbar } from "@/src/widgets/header/ui";
+import { TablePreview } from "./TablePreview";
 
 const AVATARS = [
   ["bg-violet-500",  "АЛ"],
