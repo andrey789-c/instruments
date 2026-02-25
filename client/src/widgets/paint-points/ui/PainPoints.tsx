@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/src/components/ui/card";
 import { cn } from "@/lib/utils";
 
 
@@ -23,7 +23,7 @@ export function PainPoints() {
     <section className="relative w-full overflow-hidden bg-[#F8F7F4] py-20 sm:py-14 xl:py-28">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#F0EDE8] to-transparent" />
 
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500/8 blur-[120px]" />
+     
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 xl:px-8">
         <div className="mb-12 flex items-end justify-between sm:mb-8 xl:mb-16">

@@ -15,10 +15,6 @@ export function HeroSection() {
   return (
     <div className="relative min-h-screen bg-[#F8F7F4] overflow-hidden flex flex-col" style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
 
-      {/* grid bg */}
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{ backgroundImage:"linear-gradient(#000 1px,transparent 1px),linear-gradient(90deg,#000 1px,transparent 1px)", backgroundSize:"48px 48px" }} />
-
       {/* glow */}
       <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] sm:w-[900px] h-[400px] sm:h-[600px] pointer-events-none"
         style={{ background:"radial-gradient(ellipse,rgba(255,107,53,0.10) 0%,transparent 70%)" }} />
