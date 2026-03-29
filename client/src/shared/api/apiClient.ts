@@ -1,9 +1,3 @@
-/**
- * Универсальный HTTP клиент для работы с API
- * Поддерживает автоматическую авторизацию, обработку ошибок и типизацию
- * Использует cookies для хранения токена
- */
-
 import { cookies } from '../lib/cookies';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
@@ -45,6 +39,7 @@ class ApiClient {
   }
 
   isAuthenticated(): boolean {
+    console.log(cookies.has(this.tokenKey))
     return cookies.has(this.tokenKey);
   }
 

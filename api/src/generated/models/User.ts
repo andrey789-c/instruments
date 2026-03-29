@@ -31,6 +31,7 @@ export type UserMinAggregateOutputType = {
   role: $Enums.Role | null
   ownerId: string | null
   organizationName: string | null
+  telegramId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +43,7 @@ export type UserMaxAggregateOutputType = {
   role: $Enums.Role | null
   ownerId: string | null
   organizationName: string | null
+  telegramId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,6 +55,7 @@ export type UserCountAggregateOutputType = {
   role: number
   ownerId: number
   organizationName: number
+  telegramId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -66,6 +69,7 @@ export type UserMinAggregateInputType = {
   role?: true
   ownerId?: true
   organizationName?: true
+  telegramId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -77,6 +81,7 @@ export type UserMaxAggregateInputType = {
   role?: true
   ownerId?: true
   organizationName?: true
+  telegramId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +93,7 @@ export type UserCountAggregateInputType = {
   role?: true
   ownerId?: true
   organizationName?: true
+  telegramId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -172,6 +178,7 @@ export type UserGroupByOutputType = {
   role: $Enums.Role
   ownerId: string | null
   organizationName: string
+  telegramId: string | null
   createdAt: Date
   updatedAt: Date
   _count: UserCountAggregateOutputType | null
@@ -204,11 +211,13 @@ export type UserWhereInput = {
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   ownerId?: Prisma.StringNullableFilter<"User"> | string | null
   organizationName?: Prisma.StringFilter<"User"> | string
+  telegramId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   ownedUsers?: Prisma.UserListRelationFilter
   tables?: Prisma.InventoryTableListRelationFilter
+  passwordResets?: Prisma.PasswordResetTokenListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -218,11 +227,13 @@ export type UserOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   ownerId?: Prisma.SortOrderInput | Prisma.SortOrder
   organizationName?: Prisma.SortOrder
+  telegramId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   owner?: Prisma.UserOrderByWithRelationInput
   ownedUsers?: Prisma.UserOrderByRelationAggregateInput
   tables?: Prisma.InventoryTableOrderByRelationAggregateInput
+  passwordResets?: Prisma.PasswordResetTokenOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -235,11 +246,13 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   ownerId?: Prisma.StringNullableFilter<"User"> | string | null
   organizationName?: Prisma.StringFilter<"User"> | string
+  telegramId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   ownedUsers?: Prisma.UserListRelationFilter
   tables?: Prisma.InventoryTableListRelationFilter
+  passwordResets?: Prisma.PasswordResetTokenListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -249,6 +262,7 @@ export type UserOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   ownerId?: Prisma.SortOrderInput | Prisma.SortOrder
   organizationName?: Prisma.SortOrder
+  telegramId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
@@ -266,6 +280,7 @@ export type UserScalarWhereWithAggregatesInput = {
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   ownerId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   organizationName?: Prisma.StringWithAggregatesFilter<"User"> | string
+  telegramId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
@@ -276,11 +291,13 @@ export type UserCreateInput = {
   password: string
   role?: $Enums.Role
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   owner?: Prisma.UserCreateNestedOneWithoutOwnedUsersInput
   ownedUsers?: Prisma.UserCreateNestedManyWithoutOwnerInput
   tables?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
+  passwordResets?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -290,10 +307,12 @@ export type UserUncheckedCreateInput = {
   role?: $Enums.Role
   ownerId?: string | null
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ownedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutOwnerInput
   tables?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
+  passwordResets?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -302,11 +321,13 @@ export type UserUpdateInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneWithoutOwnedUsersNestedInput
   ownedUsers?: Prisma.UserUpdateManyWithoutOwnerNestedInput
   tables?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
+  passwordResets?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -316,10 +337,12 @@ export type UserUncheckedUpdateInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedUsers?: Prisma.UserUncheckedUpdateManyWithoutOwnerNestedInput
   tables?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
+  passwordResets?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -329,6 +352,7 @@ export type UserCreateManyInput = {
   role?: $Enums.Role
   ownerId?: string | null
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -339,6 +363,7 @@ export type UserUpdateManyMutationInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -350,6 +375,7 @@ export type UserUncheckedUpdateManyInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -376,6 +402,7 @@ export type UserCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   organizationName?: Prisma.SortOrder
+  telegramId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -387,6 +414,7 @@ export type UserMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   organizationName?: Prisma.SortOrder
+  telegramId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -398,6 +426,7 @@ export type UserMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   ownerId?: Prisma.SortOrder
   organizationName?: Prisma.SortOrder
+  telegramId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -435,6 +464,10 @@ export type EnumRoleFieldUpdateOperationsInput = {
   set?: $Enums.Role
 }
 
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
@@ -463,10 +496,6 @@ export type UserUpdateManyWithoutOwnerNestedInput = {
   deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type UserUncheckedUpdateManyWithoutOwnerNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutOwnerInput, Prisma.UserUncheckedCreateWithoutOwnerInput> | Prisma.UserCreateWithoutOwnerInput[] | Prisma.UserUncheckedCreateWithoutOwnerInput[]
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnerInput | Prisma.UserCreateOrConnectWithoutOwnerInput[]
@@ -479,6 +508,20 @@ export type UserUncheckedUpdateManyWithoutOwnerNestedInput = {
   update?: Prisma.UserUpdateWithWhereUniqueWithoutOwnerInput | Prisma.UserUpdateWithWhereUniqueWithoutOwnerInput[]
   updateMany?: Prisma.UserUpdateManyWithWhereWithoutOwnerInput | Prisma.UserUpdateManyWithWhereWithoutOwnerInput[]
   deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserCreateNestedOneWithoutPasswordResetsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPasswordResetsInput, Prisma.UserUncheckedCreateWithoutPasswordResetsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPasswordResetsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPasswordResetsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPasswordResetsInput, Prisma.UserUncheckedCreateWithoutPasswordResetsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPasswordResetsInput
+  upsert?: Prisma.UserUpsertWithoutPasswordResetsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPasswordResetsInput, Prisma.UserUpdateWithoutPasswordResetsInput>, Prisma.UserUncheckedUpdateWithoutPasswordResetsInput>
 }
 
 export type UserCreateNestedOneWithoutTablesInput = {
@@ -501,10 +544,12 @@ export type UserCreateWithoutOwnedUsersInput = {
   password: string
   role?: $Enums.Role
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   owner?: Prisma.UserCreateNestedOneWithoutOwnedUsersInput
   tables?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
+  passwordResets?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOwnedUsersInput = {
@@ -514,9 +559,11 @@ export type UserUncheckedCreateWithoutOwnedUsersInput = {
   role?: $Enums.Role
   ownerId?: string | null
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tables?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
+  passwordResets?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOwnedUsersInput = {
@@ -530,10 +577,12 @@ export type UserCreateWithoutOwnerInput = {
   password: string
   role?: $Enums.Role
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ownedUsers?: Prisma.UserCreateNestedManyWithoutOwnerInput
   tables?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
+  passwordResets?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOwnerInput = {
@@ -542,10 +591,12 @@ export type UserUncheckedCreateWithoutOwnerInput = {
   password: string
   role?: $Enums.Role
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ownedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutOwnerInput
   tables?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
+  passwordResets?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOwnerInput = {
@@ -575,10 +626,12 @@ export type UserUpdateWithoutOwnedUsersInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneWithoutOwnedUsersNestedInput
   tables?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
+  passwordResets?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOwnedUsersInput = {
@@ -588,9 +641,11 @@ export type UserUncheckedUpdateWithoutOwnedUsersInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tables?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
+  passwordResets?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithWhereUniqueWithoutOwnerInput = {
@@ -619,8 +674,81 @@ export type UserScalarWhereInput = {
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   ownerId?: Prisma.StringNullableFilter<"User"> | string | null
   organizationName?: Prisma.StringFilter<"User"> | string
+  telegramId?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+}
+
+export type UserCreateWithoutPasswordResetsInput = {
+  id?: string
+  email: string
+  password: string
+  role?: $Enums.Role
+  organizationName: string
+  telegramId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner?: Prisma.UserCreateNestedOneWithoutOwnedUsersInput
+  ownedUsers?: Prisma.UserCreateNestedManyWithoutOwnerInput
+  tables?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
+}
+
+export type UserUncheckedCreateWithoutPasswordResetsInput = {
+  id?: string
+  email: string
+  password: string
+  role?: $Enums.Role
+  ownerId?: string | null
+  organizationName: string
+  telegramId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutOwnerInput
+  tables?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
+}
+
+export type UserCreateOrConnectWithoutPasswordResetsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPasswordResetsInput, Prisma.UserUncheckedCreateWithoutPasswordResetsInput>
+}
+
+export type UserUpsertWithoutPasswordResetsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPasswordResetsInput, Prisma.UserUncheckedUpdateWithoutPasswordResetsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPasswordResetsInput, Prisma.UserUncheckedCreateWithoutPasswordResetsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPasswordResetsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPasswordResetsInput, Prisma.UserUncheckedUpdateWithoutPasswordResetsInput>
+}
+
+export type UserUpdateWithoutPasswordResetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneWithoutOwnedUsersNestedInput
+  ownedUsers?: Prisma.UserUpdateManyWithoutOwnerNestedInput
+  tables?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPasswordResetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedUsers?: Prisma.UserUncheckedUpdateManyWithoutOwnerNestedInput
+  tables?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
 }
 
 export type UserCreateWithoutTablesInput = {
@@ -629,10 +757,12 @@ export type UserCreateWithoutTablesInput = {
   password: string
   role?: $Enums.Role
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   owner?: Prisma.UserCreateNestedOneWithoutOwnedUsersInput
   ownedUsers?: Prisma.UserCreateNestedManyWithoutOwnerInput
+  passwordResets?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTablesInput = {
@@ -642,9 +772,11 @@ export type UserUncheckedCreateWithoutTablesInput = {
   role?: $Enums.Role
   ownerId?: string | null
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   ownedUsers?: Prisma.UserUncheckedCreateNestedManyWithoutOwnerInput
+  passwordResets?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTablesInput = {
@@ -669,10 +801,12 @@ export type UserUpdateWithoutTablesInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneWithoutOwnedUsersNestedInput
   ownedUsers?: Prisma.UserUpdateManyWithoutOwnerNestedInput
+  passwordResets?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTablesInput = {
@@ -682,9 +816,11 @@ export type UserUncheckedUpdateWithoutTablesInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedUsers?: Prisma.UserUncheckedUpdateManyWithoutOwnerNestedInput
+  passwordResets?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyOwnerInput = {
@@ -693,6 +829,7 @@ export type UserCreateManyOwnerInput = {
   password: string
   role?: $Enums.Role
   organizationName: string
+  telegramId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -703,10 +840,12 @@ export type UserUpdateWithoutOwnerInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedUsers?: Prisma.UserUpdateManyWithoutOwnerNestedInput
   tables?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
+  passwordResets?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOwnerInput = {
@@ -715,10 +854,12 @@ export type UserUncheckedUpdateWithoutOwnerInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ownedUsers?: Prisma.UserUncheckedUpdateManyWithoutOwnerNestedInput
   tables?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
+  passwordResets?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutOwnerInput = {
@@ -727,6 +868,7 @@ export type UserUncheckedUpdateManyWithoutOwnerInput = {
   password?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -739,11 +881,13 @@ export type UserUncheckedUpdateManyWithoutOwnerInput = {
 export type UserCountOutputType = {
   ownedUsers: number
   tables: number
+  passwordResets: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ownedUsers?: boolean | UserCountOutputTypeCountOwnedUsersArgs
   tables?: boolean | UserCountOutputTypeCountTablesArgs
+  passwordResets?: boolean | UserCountOutputTypeCountPasswordResetsArgs
 }
 
 /**
@@ -770,6 +914,13 @@ export type UserCountOutputTypeCountTablesArgs<ExtArgs extends runtime.Types.Ext
   where?: Prisma.InventoryTableWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPasswordResetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PasswordResetTokenWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -778,11 +929,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   role?: boolean
   ownerId?: boolean
   organizationName?: boolean
+  telegramId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   owner?: boolean | Prisma.User$ownerArgs<ExtArgs>
   ownedUsers?: boolean | Prisma.User$ownedUsersArgs<ExtArgs>
   tables?: boolean | Prisma.User$tablesArgs<ExtArgs>
+  passwordResets?: boolean | Prisma.User$passwordResetsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -793,6 +946,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   ownerId?: boolean
   organizationName?: boolean
+  telegramId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   owner?: boolean | Prisma.User$ownerArgs<ExtArgs>
@@ -805,6 +959,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   ownerId?: boolean
   organizationName?: boolean
+  telegramId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   owner?: boolean | Prisma.User$ownerArgs<ExtArgs>
@@ -817,15 +972,17 @@ export type UserSelectScalar = {
   role?: boolean
   ownerId?: boolean
   organizationName?: boolean
+  telegramId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password" | "role" | "ownerId" | "organizationName" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password" | "role" | "ownerId" | "organizationName" | "telegramId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.User$ownerArgs<ExtArgs>
   ownedUsers?: boolean | Prisma.User$ownedUsersArgs<ExtArgs>
   tables?: boolean | Prisma.User$tablesArgs<ExtArgs>
+  passwordResets?: boolean | Prisma.User$passwordResetsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -841,6 +998,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     owner: Prisma.$UserPayload<ExtArgs> | null
     ownedUsers: Prisma.$UserPayload<ExtArgs>[]
     tables: Prisma.$InventoryTablePayload<ExtArgs>[]
+    passwordResets: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -849,6 +1007,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     role: $Enums.Role
     ownerId: string | null
     organizationName: string
+    telegramId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["user"]>
@@ -1248,6 +1407,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   owner<T extends Prisma.User$ownerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownerArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   ownedUsers<T extends Prisma.User$ownedUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownedUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   tables<T extends Prisma.User$tablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryTablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  passwordResets<T extends Prisma.User$passwordResetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$passwordResetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1283,6 +1443,7 @@ export interface UserFieldRefs {
   readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly ownerId: Prisma.FieldRef<"User", 'String'>
   readonly organizationName: Prisma.FieldRef<"User", 'String'>
+  readonly telegramId: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
 }
@@ -1745,6 +1906,30 @@ export type User$tablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.InventoryTableScalarFieldEnum | Prisma.InventoryTableScalarFieldEnum[]
+}
+
+/**
+ * User.passwordResets
+ */
+export type User$passwordResetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PasswordResetToken
+   */
+  select?: Prisma.PasswordResetTokenSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PasswordResetToken
+   */
+  omit?: Prisma.PasswordResetTokenOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PasswordResetTokenInclude<ExtArgs> | null
+  where?: Prisma.PasswordResetTokenWhereInput
+  orderBy?: Prisma.PasswordResetTokenOrderByWithRelationInput | Prisma.PasswordResetTokenOrderByWithRelationInput[]
+  cursor?: Prisma.PasswordResetTokenWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PasswordResetTokenScalarFieldEnum | Prisma.PasswordResetTokenScalarFieldEnum[]
 }
 
 /**

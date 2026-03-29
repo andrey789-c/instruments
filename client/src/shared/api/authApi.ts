@@ -1,23 +1,9 @@
 import { apiClient } from './apiClient';
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  organizationName: string;
-}
-
-export interface AuthResponse {
-  access_token: string;
-}
-
+export interface LoginRequest { email: string; password: string; }
+export interface RegisterRequest { email: string; password: string; organizationName: string; }
 export interface User {
-  id: string;
-  email: string;
+  id: string; email: string;
   role: 'USER' | 'ADMIN' | 'SUPERADMIN';
   organizationName: string;
   ownerId: string | null;
@@ -25,67 +11,39 @@ export interface User {
 }
 
 class AuthApi {
-  async login(data: LoginRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/auth/login', data);
-    return response;
+  async login(data: LoginRequest) {
+    return apiClient.post<{ success: boolean; user: Omit<User, 'ownerId' | 'createdAt'> }>('/auth/login', data);
   }
 
   async register(data: RegisterRequest): Promise<User> {
-    // if (!this.isAuthenticated()) {
-    //   throw new Error('Требуется авторизация');
-    // }
-
-    const response = await apiClient.post<User>('/auth/create', data);
-    return response;
+    return apiClient.post<User>('/auth/register', data);
   }
 
   async getCurrentUser(): Promise<User> {
-    if (!this.isAuthenticated()) {
-      throw new Error('Требуется авторизация');
-    }
-
-    return apiClient.get<User>('/auth/me');
+    return apiClient.post<User>('/auth/me', {});
   }
 
-  /**
-   * Выход из системы
-   */
   async logout(): Promise<void> {
-    // Если на бэкенде есть endpoint для logout
-    try {
-      await apiClient.post('/auth/logout');
-    } catch (error) {
-      // Игнорируем ошибку, всё равно удаляем токен
-      console.error('Logout error:', error);
-    } finally {
-      this.removeToken();
-    }
+    try { await apiClient.post('/auth/logout'); } catch { /* ignore */ }
   }
 
-  /**
-   * Сохранить токен
-   */
-  saveToken(token: string): void {
-    apiClient.setToken(token);
+  // ─── Password Reset ───────────────────────────────────────────────
+
+  /** Шаг 1: запросить OTP */
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    return apiClient.post('/auth/forgot-password', { email });
   }
 
-  /**
-   * Получить токен
-   */
-  getToken(): string | null {
-    return apiClient.isAuthenticated() ? 'exists' : null; // Для обратной совместимости
+  /** Шаг 2: проверить OTP → получить resetToken */
+  async verifyOtp(email: string, code: string): Promise<{ resetToken: string }> {
+    return apiClient.post('/auth/verify-otp', { email, code });
   }
 
-  /**
-   * Удалить токен (выход)
-   */
-  removeToken(): void {
-    apiClient.removeToken();
+  /** Шаг 3: сменить пароль */
+  async resetPassword(resetToken: string, password: string): Promise<{ message: string }> {
+    return apiClient.post('/auth/reset-password', { resetToken, password });
   }
 
-  /**
-   * Проверка авторизации
-   */
   isAuthenticated(): boolean {
     return apiClient.isAuthenticated();
   }

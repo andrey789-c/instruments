@@ -48,6 +48,11 @@ path.join(process.cwd(), "src/generated/libquery_engine-darwin.dylib.node")
  */
 export type User = Prisma.UserModel
 /**
+ * Model PasswordResetToken
+ * 
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel
+/**
  * Model InventoryTable
  * 
  */

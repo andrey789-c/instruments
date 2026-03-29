@@ -13,6 +13,7 @@ export const Login = () => {
   const searchParams = useSearchParams();
   const redirectTo = '/dashboard';
   const registered = searchParams.get('registered');
+  const passwordReset = searchParams.get('passwordReset');
 
   const [formData, setFormData] = useState({
     email: '',
@@ -29,9 +30,7 @@ export const Login = () => {
       required: true,
       pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
       custom: (value: string) => {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          return 'Введите корректный email';
-        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Введите корректный email';
         return null;
       },
     },
@@ -51,13 +50,8 @@ export const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError('');
-
-    if (!validate(formData, validationRules)) {
-      return;
-    }
-
+    if (!validate(formData, validationRules)) return;
     setIsLoading(true);
-
     try {
       await authApi.login(formData);
       router.push(redirectTo);
@@ -70,7 +64,6 @@ export const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F8F7F4] via-[#F0EDE8] to-[#F8F7F4] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated background elements */}
       <div
         className="absolute top-0 left-0 w-[800px] h-[800px] pointer-events-none opacity-30 animate-pulse"
         style={{
@@ -86,27 +79,20 @@ export const Login = () => {
         }}
       />
 
-      {/* Main content */}
       <div className="relative z-10 w-full max-w-[1100px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left side - Branding & Features */}
+          {/* Left side - Branding */}
           <div className="hidden lg:block space-y-8">
-            {/* Logo */}
             <div className="flex items-center gap-3 mb-12 animate-slide-in-left">
               <div className="w-14 h-14 rounded-[12px] bg-gradient-to-br from-[#FF6B35] to-[#ff7a46] flex items-center justify-center shadow-[0_8px_32px_rgba(255,107,53,0.35)]">
                 <Package size={28} className="text-white" />
               </div>
               <div>
-                <span className="text-[#0D0F14] font-black text-2xl tracking-tight block">
-                  StockFlow
-                </span>
-                <span className="text-[#0D0F14]/40 text-sm">
-                  Учёт инвентаря
-                </span>
+                <span className="text-[#0D0F14] font-black text-2xl tracking-tight block">StockFlow</span>
+                <span className="text-[#0D0F14]/40 text-sm">Учёт инвентаря</span>
               </div>
             </div>
 
-            {/* Hero text */}
             <div className="space-y-4 animate-slide-in-left" style={{ animationDelay: '0.1s' }}>
               <h1 className="text-5xl font-black text-[#0D0F14] leading-[1.1] tracking-tight">
                 Добро пожаловать
@@ -118,7 +104,6 @@ export const Login = () => {
               </p>
             </div>
 
-            {/* Features */}
             <div className="space-y-4 pt-4">
               {[
                 { icon: '⚡', text: 'Настройка за 5 минут' },
@@ -126,11 +111,7 @@ export const Login = () => {
                 { icon: '📊', text: 'Аналитика в реальном времени' },
                 { icon: '🔒', text: 'Безопасное хранение данных' },
               ].map((feature, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-4 animate-slide-in-left"
-                  style={{ animationDelay: `${0.2 + i * 0.1}s` }}
-                >
+                <div key={i} className="flex items-center gap-4 animate-slide-in-left" style={{ animationDelay: `${0.2 + i * 0.1}s` }}>
                   <div className="w-12 h-12 rounded-xl bg-white border border-[#0D0F14]/08 flex items-center justify-center shadow-sm">
                     <span className="text-2xl">{feature.icon}</span>
                   </div>
@@ -139,7 +120,6 @@ export const Login = () => {
               ))}
             </div>
 
-            {/* Stats */}
             <div className="flex gap-8 pt-8 animate-slide-in-left" style={{ animationDelay: '0.6s' }}>
               <div>
                 <div className="text-3xl font-black text-[#0D0F14]">2,400+</div>
@@ -154,24 +134,32 @@ export const Login = () => {
 
           {/* Right side - Login Form */}
           <div className="w-full animate-slide-in-right">
-            {/* Mobile logo */}
             <div className="lg:hidden flex items-center gap-3 justify-center mb-8">
               <div className="w-12 h-12 rounded-[10px] bg-gradient-to-br from-[#FF6B35] to-[#ff7a46] flex items-center justify-center shadow-[0_8px_24px_rgba(255,107,53,0.28)]">
                 <Package size={24} className="text-white" />
               </div>
-              <span className="text-[#0D0F14] font-black text-2xl tracking-tight">
-                StockFlow
-              </span>
+              <span className="text-[#0D0F14] font-black text-2xl tracking-tight">StockFlow</span>
             </div>
 
             <div className="bg-white rounded-3xl shadow-[0_20px_80px_rgba(0,0,0,0.12)] p-8 lg:p-10 border border-[#0D0F14]/05">
-              {/* Success message */}
+              {/* Success: registered */}
               {registered && (
-                <div className="mb-6 flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl animate-fade-in">
+                <div className="mb-6 flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-sm font-semibold text-emerald-700">Регистрация успешна!</p>
                     <p className="text-xs text-emerald-600 mt-1">Войдите, используя свои учетные данные</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Success: password reset */}
+              {passwordReset && (
+                <div className="mb-6 flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-emerald-700">Пароль успешно изменён!</p>
+                    <p className="text-xs text-emerald-600 mt-1">Войдите с новым паролем</p>
                   </div>
                 </div>
               )}
@@ -208,8 +196,7 @@ export const Login = () => {
                   />
                   {errors.email && (
                     <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
-                      <AlertCircle size={12} />
-                      {errors.email}
+                      <AlertCircle size={12} />{errors.email}
                     </p>
                   )}
                 </div>
@@ -220,12 +207,14 @@ export const Login = () => {
                     <label htmlFor="password" className="text-sm font-semibold text-[#0D0F14]/70">
                       Пароль
                     </label>
-                    {/* <button
+                    {/* ✅ Кнопка "Забыли пароль" — подключена */}
+                    <button
                       type="button"
+                      onClick={() => router.push('/auth/forgot-password')}
                       className="text-xs text-[#FF6B35] hover:text-[#ff7a46] font-semibold transition-colors"
                     >
                       Забыли пароль?
-                    </button> */}
+                    </button>
                   </div>
                   <div className="relative">
                     <Input
@@ -249,8 +238,7 @@ export const Login = () => {
                   </div>
                   {errors.password && (
                     <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
-                      <AlertCircle size={12} />
-                      {errors.password}
+                      <AlertCircle size={12} />{errors.password}
                     </p>
                   )}
                 </div>
@@ -267,7 +255,7 @@ export const Login = () => {
                   </label>
                 </div>
 
-                {/* Submit button */}
+                {/* Submit */}
                 <Button
                   type="submit"
                   disabled={isLoading}
@@ -312,7 +300,6 @@ export const Login = () => {
               </form>
             </div>
 
-            {/* Trust indicators */}
             <div className="mt-6 flex items-center justify-center gap-6 text-xs text-[#0D0F14]/40">
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
@@ -332,58 +319,29 @@ export const Login = () => {
           0%, 100% { transform: translate(0, 0) rotate(0deg); }
           50% { transform: translate(30px, -30px) rotate(5deg); }
         }
-        
         @keyframes slide-in-left {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+          from { opacity: 0; transform: translateX(-30px); }
+          to { opacity: 1; transform: translateX(0); }
         }
-        
         @keyframes slide-in-right {
-          from {
-            opacity: 0;
-            transform: translateX(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+          from { opacity: 0; transform: translateX(30px); }
+          to { opacity: 1; transform: translateX(0); }
         }
-        
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
           25% { transform: translateX(-5px); }
           75% { transform: translateX(5px); }
         }
-        
         .animate-slide-in-left {
           animation: slide-in-left 0.6s ease-out forwards;
           opacity: 0;
         }
-        
         .animate-slide-in-right {
           animation: slide-in-right 0.6s ease-out forwards;
           opacity: 0;
         }
-        
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-        
-        .animate-shake {
-          animation: shake 0.3s ease-out;
-        }
+        .animate-shake { animation: shake 0.3s ease-out; }
       `}</style>
     </div>
   );
-}
+};
