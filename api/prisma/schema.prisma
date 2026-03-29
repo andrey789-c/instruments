@@ -15,28 +15,27 @@ enum Role {
 }
 
 model User {
-  id               String   @id @default(uuid())
-  email            String   @unique
+  id               String  @id @default(uuid())
+  email            String  @unique
   password         String
-  role             Role     @default(USER)
-
-  ownerId          String?
-  owner            User?    @relation("OwnedUsers", fields: [ownerId], references: [id])
-  ownedUsers       User[]   @relation("OwnedUsers")
-
+  role             Role    @default(USER)
   organizationName String
-  telegramId       String?  // числовой chat_id из Telegram
+  ownerId          String?
+  telegramId       String?
 
-  tables           InventoryTable[]
-  passwordResets   PasswordResetToken[]
+  phone         String? @unique // номер в формате 77001234567
+  phoneVerified Boolean @default(false)
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  PasswordResetToken PasswordResetToken[]
+  InventoryTable     InventoryTable[]     @relation("owner")
 }
 
 model PasswordResetToken {
   id        String    @id @default(uuid())
-  code      String    // 6-значный OTP-код
+  code      String // 6-значный OTP-код
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
@@ -46,27 +45,27 @@ model PasswordResetToken {
 }
 
 model InventoryTable {
-  id        String   @id @default(uuid())
-  name      String
+  id   String @id @default(uuid())
+  name String
 
-  ownerId   String
-  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+  owner   User   @relation("owner", fields: [ownerId], references: [id], onDelete: Cascade)
 
-  items     InventoryItem[]
+  items InventoryItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model InventoryItem {
-  id          String   @id @default(uuid())
+  id          String @id @default(uuid())
   name        String
   description String
   price       Float
 
-  tableId     String
-  table       InventoryTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  tableId String
+  table   InventoryTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

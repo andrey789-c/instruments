@@ -236,7 +236,7 @@ export type InventoryTableCreateInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  owner: Prisma.UserCreateNestedOneWithoutTablesInput
+  owner: Prisma.UserCreateNestedOneWithoutInventoryTableInput
   items?: Prisma.InventoryItemCreateNestedManyWithoutTableInput
 }
 
@@ -254,7 +254,7 @@ export type InventoryTableUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  owner?: Prisma.UserUpdateOneRequiredWithoutTablesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutInventoryTableNestedInput
   items?: Prisma.InventoryItemUpdateManyWithoutTableNestedInput
 }
 
@@ -443,7 +443,7 @@ export type InventoryTableCreateWithoutItemsInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  owner: Prisma.UserCreateNestedOneWithoutTablesInput
+  owner: Prisma.UserCreateNestedOneWithoutInventoryTableInput
 }
 
 export type InventoryTableUncheckedCreateWithoutItemsInput = {
@@ -475,7 +475,7 @@ export type InventoryTableUpdateWithoutItemsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  owner?: Prisma.UserUpdateOneRequiredWithoutTablesNestedInput
+  owner?: Prisma.UserUpdateOneRequiredWithoutInventoryTableNestedInput
 }
 
 export type InventoryTableUncheckedUpdateWithoutItemsInput = {

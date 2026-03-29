@@ -1,3 +1,5 @@
+// api/src/auth/auth.module.ts
+
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -13,7 +15,7 @@ import { TelegramModule } from 'src/telegram/telegram.module';
   imports: [
     PrismaModule,
     PassportModule,
-    TelegramModule,
+    TelegramModule,           // уже был — теперь экспортирует и TelegramBotService
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

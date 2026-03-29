@@ -1,5 +1,23 @@
 {
-  "dependencies": {
+  "name": "stockflow",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev":   "concurrently -n api,client -c cyan,magenta \"npm run dev:api\" \"npm run dev:client\"",
+    "build": "npm run build:api && npm run build:client",
+    "start": "concurrently -n api,client -c cyan,magenta \"npm run start:api\" \"npm run start:client\"",
+
+    "dev:api":     "npm --prefix api run start:dev",
+    "dev:client":  "npm --prefix client run dev",
+
+    "build:api":   "npm --prefix api run build",
+    "build:client":"npm --prefix client run build",
+
+    "start:api":   "npm --prefix api run start:prod",
+    "start:client":"npm --prefix client run start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
     "cookie-parser": "^1.4.7"
   }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
 
@@ -46,25 +46,45 @@ export class AuthService {
     role?: string;
     ownerId?: string;
     organizationName: string;
+    phone?: string;
   }) {
     const hashed = await bcrypt.hash(data.password, 10);
-    return this.prisma.user.create({
-      data: {
-        email: data.email,
-        password: hashed,
-        role: data.role as any,
-        organizationName: data.organizationName,
-        ownerId: data.ownerId,
-      },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        organizationName: true,
-        ownerId: true,
-        createdAt: true,
-      },
-    });
+   
+    try {
+      return await this.prisma.user.create({
+        data: {
+          email: data.email,
+          password: hashed,
+          role: data.role as any,
+          organizationName: data.organizationName,
+          ownerId: data.ownerId,
+          phone: data.phone ? data.phone.replace(/\D/g, '') : undefined,
+        },
+        select: {
+          id: true,
+          email: true,
+          role: true,
+          organizationName: true,
+          ownerId: true,
+          phone: true,
+          phoneVerified: true,
+          createdAt: true,
+        },
+      });
+    } catch (error) {
+      // P2002 — нарушение уникального ограничения
+      if (error?.code === 'P2002') {
+        const field = error?.meta?.target?.[0];
+        if (field === 'email') {
+          throw new ConflictException('Пользователь с таким email уже существует');
+        }
+        if (field === 'phone') {
+          throw new ConflictException('Этот номер телефона уже привязан к другому аккаунту');
+        }
+        throw new ConflictException('Такая запись уже существует');
+      }
+      throw error;
+    }
   }
 
   // ─── Step 1: отправить OTP в Telegram ─────────────────────────────

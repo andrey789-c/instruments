@@ -295,7 +295,7 @@ export type PasswordResetTokenCreateInput = {
   usedAt?: Date | string | null
   attempts?: number
   createdAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutPasswordResetsInput
+  user: Prisma.UserCreateNestedOneWithoutPasswordResetTokenInput
 }
 
 export type PasswordResetTokenUncheckedCreateInput = {
@@ -315,7 +315,7 @@ export type PasswordResetTokenUpdateInput = {
   usedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   attempts?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutPasswordResetsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutPasswordResetTokenNestedInput
 }
 
 export type PasswordResetTokenUncheckedUpdateInput = {
