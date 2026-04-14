@@ -6,6 +6,7 @@
     "dev":   "concurrently -n api,client -c cyan,magenta \"npm run dev:api\" \"npm run dev:client\"",
     "build": "npm run build:api && npm run build:client",
     "start": "concurrently -n api,client -c cyan,magenta \"npm run start:api\" \"npm run start:client\"",
+    "prod":  "npm run build && npm run start",
 
     "dev:api":     "npm --prefix api run start:dev",
     "dev:client":  "npm --prefix client run dev",
