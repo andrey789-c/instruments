@@ -7,6 +7,7 @@ import { Button } from '@/src/components/ui/button';
 import { authApi } from '@/src/shared/api';
 import { useFormValidation } from '@/src/shared/hooks/useValidationForm';
 import { AlertCircle, Eye, EyeOff, Package, ArrowRight, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 
 export const Login = () => {
   const router = useRouter();
@@ -267,10 +268,10 @@ export const Login = () => {
                       Вход...
                     </span>
                   ) : (
-                    <span className="flex items-center gap-2">
+                    <Link href={'/auth/login'} className="flex items-center gap-2">
                       Войти
                       <ArrowRight size={18} />
-                    </span>
+                    </Link>
                   )}
                 </Button>
 

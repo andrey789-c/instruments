@@ -59,10 +59,10 @@ export function TableDetailPage({ tableId }: Props) {
     try {
       const [me, t] = await Promise.all([
         authApi.getCurrentUser(),
-        tablesApi.getById(tableId) as Promise<TableDetail>,
+        tablesApi.getById(tableId),
       ]);
       setUser(me);
-      setTable(t);
+      setTable(t as unknown as TableDetail);
     } catch {
       setError('Не удалось загрузить таблицу');
     } finally {

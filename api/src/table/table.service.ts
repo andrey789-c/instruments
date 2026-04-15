@@ -12,12 +12,8 @@ export class TableService {
         id: true,
         name: true,
         items: {
-          select: { price: true },
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
+          select:{price:true}
+        }
       },
     });
 
