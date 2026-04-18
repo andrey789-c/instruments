@@ -44,6 +44,15 @@ model PasswordResetToken {
   createdAt DateTime  @default(now())
 }
 
+model PhoneVerification {
+  id        String   @id @default(uuid())
+  hash      String   @unique
+  phone     String
+  chatId    String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
 model InventoryTable {
   id   String @id @default(uuid())
   name String

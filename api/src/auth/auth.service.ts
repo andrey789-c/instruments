@@ -58,7 +58,7 @@ export class AuthService {
           role: data.role as any,
           organizationName: data.organizationName,
           ownerId: data.ownerId,
-          phone: data.phone ? data.phone.replace(/\D/g, '') : undefined,
+          phone: data.phone ? this.normalizePhone(data.phone) : undefined,
         },
         select: {
           id: true,
@@ -139,7 +139,7 @@ export class AuthService {
     }
 
     if (record.attempts >= MAX_ATTEMPTS) {
-      throw new Request(
+      throw new BadRequestException(
         "Слишком много неверных попыток. Запросите новый код.",
       );
     }
@@ -171,6 +171,14 @@ export class AuthService {
   }
 
   // ─── Step 3: сменить пароль по resetToken ─────────────────────────
+
+  private normalizePhone(phone: string): string {
+    let digits = phone.replace(/\D/g, '');
+    if (digits.startsWith('8') && digits.length === 11) {
+      digits = '7' + digits.slice(1);
+    }
+    return digits;
+  }
 
   async resetPassword(resetToken: string, newPassword: string): Promise<void> {
     const record = await this.prisma.passwordResetToken.findFirst({

@@ -36,6 +36,11 @@ export class AuthController {
   async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
     const user = await this.auth.validateUser(body.email, body.password);
     if (!user) throw new UnauthorizedException('Неверный email или пароль');
+    if (!user.phoneVerified) {
+      throw new UnauthorizedException(
+        'Сначала подтвердите номер телефона через Telegram.',
+      );
+    }
  
     const { access_token } = await this.auth.login(user);
  
@@ -68,7 +73,8 @@ export class AuthController {
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() dto: CreateUserDto) {
-    return this.users.createUser(dto);
+    // Самостоятельная регистрация — всегда SUPERADMIN (владелец организации)
+    return this.users.createUser({ ...dto, role: 'SUPERADMIN' });
   }
  
   @UseGuards(JwtAuthGuard)

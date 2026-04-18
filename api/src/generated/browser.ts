@@ -28,6 +28,11 @@ export type User = Prisma.UserModel
  */
 export type PasswordResetToken = Prisma.PasswordResetTokenModel
 /**
+ * Model PhoneVerification
+ * 
+ */
+export type PhoneVerification = Prisma.PhoneVerificationModel
+/**
  * Model InventoryTable
  * 
  */

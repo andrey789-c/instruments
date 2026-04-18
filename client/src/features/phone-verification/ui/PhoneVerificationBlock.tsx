@@ -7,6 +7,7 @@ import { usePhoneVerification } from '../model/usePhoneVerification';
 import { CheckCircle2, ExternalLink, RefreshCw, Phone, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/src/components/ui/button';
 import { Input } from '@/src/components/ui/input';
+import { formatPhoneMask, unformatPhone, isPhoneComplete } from '@/src/shared/lib/phoneMask';
 
 interface PhoneVerificationBlockProps {
   /** Номер телефона, заполненный в форме регистрации */
@@ -28,12 +29,12 @@ export function PhoneVerificationBlock({
   onVerified,
   compact = false,
 }: PhoneVerificationBlockProps) {
-  const [phone, setPhone] = useState(initialPhone);
+  const [phone, setPhone] = useState(() => formatPhoneMask(initialPhone));
   const { state, telegramUrl, secondsLeft, start, reset } = usePhoneVerification();
 
-  // Если пришёл initialPhone — автоматически подставляем
+  // Если пришёл initialPhone — автоматически подставляем (под маску)
   useEffect(() => {
-    if (initialPhone) setPhone(initialPhone);
+    if (initialPhone) setPhone(formatPhoneMask(initialPhone));
   }, [initialPhone]);
 
   // Уведомляем родителя об успехе
@@ -150,14 +151,14 @@ export function PhoneVerificationBlock({
           type="tel"
           placeholder="+7 900 000 00 00"
           value={phone}
-          onChange={e => setPhone(e.target.value)}
+          onChange={e => setPhone(formatPhoneMask(e.target.value))}
           disabled={state === 'generating'}
           className="h-11 flex-1"
         />
         <Button
           type="button"
-          onClick={() => start(phone)}
-          disabled={state === 'generating' || phone.replace(/\D/g, '').length < 10}
+          onClick={() => start(unformatPhone(phone))}
+          disabled={state === 'generating' || !isPhoneComplete(phone)}
           className="h-11 px-4 bg-[#229ED9] hover:bg-[#1a8bbf] text-white shrink-0"
         >
           {state === 'generating' ? (

@@ -22,6 +22,11 @@ export class UsersService {
         "Введите название Вашей организации",
       );
     }
+    if (!dto.phone || dto.phone.replace(/\D/g, "").length < 10) {
+      throw new UnprocessableEntityException(
+        "Введите корректный номер телефона",
+      );
+    }
     // ownerId stays null
     return this.auth.createUser({ ...dto, role, ownerId: undefined });
   }

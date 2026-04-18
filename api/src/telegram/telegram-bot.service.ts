@@ -1,33 +1,103 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Telegraf, Markup } from 'telegraf';
 import * as crypto from 'crypto';
 
 @Injectable()
-export class TelegramBotService {
+export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TelegramBotService.name);
-  private readonly botToken: string;
-  private readonly apiUrl: string;
-
-  // Временное хранилище: hash → phone (живёт 15 мин)
-  // В продакшне замените на Redis
-  private readonly pendingLinks = new Map<string, { phone: string; expiresAt: number }>();
+  private bot: Telegraf;
+  private running = false;
 
   constructor(
     private readonly config: ConfigService,
     private readonly prisma: PrismaService,
   ) {
-    this.botToken = this.config.get<string>('TELEGRAM_BOT_TOKEN', '');
-    this.apiUrl = `https://api.telegram.org/bot${this.botToken}`;
+    const token = this.config.get<string>('TELEGRAM_BOT_TOKEN', '');
+    this.bot = new Telegraf(token);
   }
 
-  generateDeepLink(phone: string): { url: string; hash: string } {
+  // ─── Lifecycle: автозапуск polling ───────────────────────────────
+
+  async onModuleInit() {
+    this.registerHandlers();
+
+    try {
+      // Сносим webhook чтобы polling не конфликтовал
+      await this.bot.telegram.deleteWebhook({ drop_pending_updates: true });
+
+      // ВАЖНО: bot.launch() в polling-режиме возвращает Promise, который
+      // резолвится только при остановке бота. Поэтому НЕ await, иначе
+      // onModuleInit зависнет навсегда.
+      this.bot
+        .launch(
+          { dropPendingUpdates: true },
+          () => {
+            this.running = true;
+            this.logger.log('Telegram bot started (long polling)');
+          },
+        )
+        .catch((err) => {
+          this.running = false;
+          this.logger.error('Telegram bot crashed', err?.message || err);
+        });
+    } catch (err) {
+      this.logger.error('Failed to init Telegram bot', err);
+    }
+  }
+
+  async onModuleDestroy() {
+    if (this.running) {
+      try {
+        this.bot.stop('App shutdown');
+        this.logger.log('Telegram bot stopped');
+      } catch (err) {
+        this.logger.warn(`Bot stop skipped: ${err?.message || err}`);
+      }
+    }
+  }
+
+  // ─── Handlers ───────────────────────────────────────────────────
+
+  private registerHandlers() {
+    // /start с deep link: /start phone_HASH
+    this.bot.start(async (ctx) => {
+      const payload = (ctx as any).startPayload as string | undefined;
+
+      if (payload?.startsWith('phone_')) {
+        await this.handleDeepLink(ctx, payload);
+      } else {
+        await ctx.reply(
+          '👋 Привет! Я бот StockFlow.\n\nЧтобы подтвердить аккаунт, перейдите по ссылке из формы регистрации.',
+        );
+      }
+    });
+
+    // Пользователь поделился контактом
+    this.bot.on('contact', async (ctx) => {
+      const contact = ctx.message.contact;
+      const chatId = String(ctx.chat.id);
+      await this.handleContact(chatId, contact.phone_number, contact.user_id);
+    });
+  }
+
+  // ─── Deep link (регистрация) ────────────────────────────────────
+
+  async generateDeepLink(phone: string): Promise<{ url: string; hash: string }> {
     const normalized = this.normalizePhone(phone);
     const hash = crypto.randomBytes(16).toString('hex');
 
-    this.pendingLinks.set(hash, {
-      phone: normalized,
-      expiresAt: Date.now() + 15 * 60 * 1000, // 15 минут
+    // Удаляем старые записи для этого номера
+    await this.prisma.phoneVerification.deleteMany({ where: { phone: normalized } });
+
+    // Сохраняем в БД
+    await this.prisma.phoneVerification.create({
+      data: {
+        hash,
+        phone: normalized,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 минут
+      },
     });
 
     const botUsername = this.config.get<string>('TELEGRAM_BOT_USERNAME');
@@ -40,48 +110,55 @@ export class TelegramBotService {
    * Вызывается когда пользователь нажал deep link и бот получил /start phone_HASH.
    * Просим поделиться контактом через кнопку.
    */
-  async handleDeepLink(chatId: string, payload: string): Promise<void> {
+  private async handleDeepLink(ctx: any, payload: string): Promise<void> {
+    const chatId = String(ctx.chat.id);
     const hash = payload.replace('phone_', '');
-    const pending = this.pendingLinks.get(hash);
 
-    if (!pending || pending.expiresAt < Date.now()) {
-      await this.sendMessage(chatId, '❌ Ссылка устарела. Пожалуйста, вернитесь на сайт и попробуйте снова.');
+    console.log(hash)
+
+    // Ищем в БД
+    const pending = await this.prisma.phoneVerification.findUnique({ where: { hash } });
+
+    if (!pending || pending.expiresAt < new Date()) {
+      await ctx.reply('❌ Ссылка устарела. Пожалуйста, вернитесь на сайт и попробуйте снова.');
       return;
     }
 
     // Просим поделиться контактом — Telegram сам верифицирует номер
-    await this.sendMessageWithKeyboard(chatId, {
-      text: '📱 Чтобы подтвердить аккаунт StockFlow, нажмите кнопку ниже и поделитесь номером телефона.',
-      keyboard: {
-        keyboard: [[{ text: '📲 Поделиться номером', request_contact: true }]],
-        resize_keyboard: true,
-        one_time_keyboard: true,
-      },
-    });
+    await ctx.reply(
+      '📱 Чтобы подтвердить аккаунт StockFlow, нажмите кнопку ниже и поделитесь номером телефона.',
+      Markup.keyboard([
+        [Markup.button.contactRequest('📲 Поделиться номером')],
+      ]).oneTime().resize(),
+    );
 
-    // Привязываем chatId к hash для дальнейшей обработки контакта
-    // Сохраняем в тот же pending
-    this.pendingLinks.set(hash, { ...pending, chatId } as any);
-    // Также индексируем по chatId чтобы найти при получении контакта
-    this.pendingLinks.set(`chat_${chatId}`, { ...pending, hash } as any);
+    // Привязываем chatId к записи
+    await this.prisma.phoneVerification.update({
+      where: { hash },
+      data: { chatId },
+    });
   }
 
+  // ─── Обработка контакта ─────────────────────────────────────────
 
-  async handleContact(chatId: string, phoneFromTelegram: string, telegramUserId?: number): Promise<void> {
-    const pendingKey = `chat_${chatId}`;
-    const pending = this.pendingLinks.get(pendingKey) as any;
+  private async handleContact(chatId: string, phoneFromTelegram: string, telegramUserId?: number): Promise<void> {
+    // Ищем pending верификацию по chatId
+    const pending = await this.prisma.phoneVerification.findFirst({
+      where: { chatId },
+      orderBy: { createdAt: 'desc' },
+    });
 
-    if (!pending || pending.expiresAt < Date.now()) {
-      await this.sendMessage(chatId, '❌ Сессия истекла. Вернитесь на сайт и начните заново.');
+    if (!pending || pending.expiresAt < new Date()) {
+      await this.bot.telegram.sendMessage(chatId, '❌ Сессия истекла. Вернитесь на сайт и начните заново.');
       return;
     }
 
     const normalizedFromTg = this.normalizePhone(phoneFromTelegram);
-    const normalizedExpected = this.normalizePhone(pending.phone);
+    const normalizedExpected = pending.phone;
 
     // Проверяем что номер совпадает с тем, что вводил пользователь на сайте
     if (normalizedFromTg !== normalizedExpected) {
-      await this.sendMessage(
+      await this.bot.telegram.sendMessage(
         chatId,
         `❌ Номер в Telegram (${phoneFromTelegram}) не совпадает с указанным на сайте.\n\nВернитесь на сайт и введите номер, привязанный к вашему Telegram.`,
       );
@@ -97,17 +174,18 @@ export class TelegramBotService {
       },
     });
 
-    // Чистим временные записи
-    this.pendingLinks.delete(pendingKey);
-    this.pendingLinks.delete(pending.hash);
+    // Удаляем использованную запись
+    await this.prisma.phoneVerification.delete({ where: { id: pending.id } });
 
     // Убираем клавиатуру и показываем успех
-    await this.sendMessageWithKeyboard(chatId, {
-      text: '✅ Отлично! Номер телефона подтверждён.\n\nТеперь вы можете войти в StockFlow.',
-      keyboard: { remove_keyboard: true },
-    });
+    await this.bot.telegram.sendMessage(
+      chatId,
+      '✅ Отлично! Номер телефона подтверждён.\n\nТеперь вы можете войти в StockFlow.',
+      { reply_markup: { remove_keyboard: true } },
+    );
   }
 
+  // ─── Отправка OTP (сброс пароля) ───────────────────────────────
 
   async sendOtpCode(chatId: string, code: string): Promise<void> {
     const text = [
@@ -118,34 +196,13 @@ export class TelegramBotService {
       `⏱ Действителен 10 минут.`,
     ].join('\n');
 
-    await this.sendMessage(chatId, text, 'Markdown');
+    await this.bot.telegram.sendMessage(chatId, text, { parse_mode: 'Markdown' });
   }
+
+  // ─── Утилиты ───────────────────────────────────────────────────
 
   async sendMessage(chatId: string, text: string, parseMode?: string): Promise<void> {
-    await fetch(`${this.apiUrl}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text,
-        ...(parseMode && { parse_mode: parseMode }),
-      }),
-    });
-  }
-
-  private async sendMessageWithKeyboard(
-    chatId: string,
-    opts: { text: string; keyboard: object },
-  ): Promise<void> {
-    await fetch(`${this.apiUrl}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: opts.text,
-        reply_markup: opts.keyboard,
-      }),
-    });
+    await this.bot.telegram.sendMessage(chatId, text, parseMode ? { parse_mode: parseMode as any } : {});
   }
 
   async checkPhoneVerified(phone: string): Promise<boolean> {

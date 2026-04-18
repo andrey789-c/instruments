@@ -8,7 +8,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   organizationName: string;
-  phone?: string;  // ← НОВОЕ
+  phone: string;
 }
 export interface User {
   id: string;

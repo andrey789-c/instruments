@@ -7,6 +7,7 @@ import { Button } from '@/src/components/ui/button';
 import { authApi } from '@/src/shared/api';
 import { useFormValidation } from '@/src/shared/hooks/useValidationForm';
 import { PhoneVerificationBlock } from '@/src/features/phone-verification/ui/PhoneVerificationBlock';
+import { formatPhoneMask, unformatPhone, isPhoneComplete } from '@/src/shared/lib/phoneMask';
 import {
   AlertCircle, Eye, EyeOff, Package, ArrowRight, CheckCircle, Building2,
 } from 'lucide-react';
@@ -61,11 +62,17 @@ export const Register = () => {
       required: true,
       custom: (v: string) => (v !== formData.password ? 'Пароли не совпадают' : null),
     },
+    phone: {
+      required: true,
+      custom: (v: string) =>
+        isPhoneComplete(v) ? null : 'Введите корректный номер телефона',
+    },
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const nextValue = name === 'phone' ? formatPhoneMask(value) : value;
+    setFormData(prev => ({ ...prev, [name]: nextValue }));
     clearError(name);
     setApiError('');
   };
@@ -79,26 +86,17 @@ export const Register = () => {
     setIsLoading(true);
     try {
       const { confirmPassword, ...registerData } = formData;
+      // Отправляем только цифры номера
+      registerData.phone = unformatPhone(registerData.phone);
       // @ts-ignore
       await authApi.register(registerData);
 
-      if (formData.phone && formData.phone.replace(/\D/g, '').length >= 10) {
-        // Есть номер — идём к шагу верификации
-        setStep('verify-phone');
-      } else {
-        // Без телефона — сразу на логин
-        router.push('/auth/login?registered=true');
-      }
+      setStep('verify-phone');
     } catch (err) {
       setApiError(err instanceof Error ? err.message : 'Ошибка регистрации');
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // ── Шаг 2: Пропустить верификацию
-  const handleSkipPhone = () => {
-    router.push('/auth/login?registered=true');
   };
 
   // ── Шаг 2: Телефон подтверждён
@@ -172,13 +170,9 @@ export const Register = () => {
             )}
 
             {!phoneVerified && (
-              <button
-                type="button"
-                onClick={handleSkipPhone}
-                className="text-sm text-[#0D0F14]/40 hover:text-[#0D0F14]/60 transition-colors w-full text-center"
-              >
-                Пропустить — подтвержу позже
-              </button>
+              <p className="text-sm text-[#0D0F14]/45 text-center">
+                Продолжить вход можно после подтверждения номера в Telegram.
+              </p>
             )}
           </div>
         </div>
@@ -298,20 +292,21 @@ export const Register = () => {
                   {errors.confirmPassword && <p className="text-xs text-red-500">{errors.confirmPassword}</p>}
                 </div>
 
-                {/* Phone (опциональный) */}
+                {/* Phone */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-[#0D0F14]/70 flex items-center gap-2">
                     Номер телефона
-                    <span className="text-[#0D0F14]/30 font-normal text-xs">— необязательно</span>
+                    <span className="text-[#0D0F14]/30 font-normal text-xs">— обязателен</span>
                   </label>
                   <Input
                     name="phone" type="tel" placeholder="+7 900 000 00 00"
                     value={formData.phone} onChange={handleChange}
                     disabled={isLoading}
-                    className="h-12"
+                    className={`h-12 ${errors.phone ? 'border-red-500' : ''}`}
                   />
+                  {errors.phone && <p className="text-xs text-red-500">{errors.phone}</p>}
                   <p className="text-xs text-[#0D0F14]/40">
-                    Для подтверждения аккаунта через Telegram и восстановления пароля
+                    Обязательная верификация через Telegram и восстановление пароля
                   </p>
                 </div>
 
