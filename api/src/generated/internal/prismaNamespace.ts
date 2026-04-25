@@ -881,6 +881,7 @@ export const InventoryItemScalarFieldEnum = {
   name: 'name',
   description: 'description',
   price: 'price',
+  quantity: 'quantity',
   tableId: 'tableId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

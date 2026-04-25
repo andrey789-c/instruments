@@ -5,6 +5,7 @@ export interface Item {
   name: string;
   description: string;
   price: number;
+  quantity: number;
   tableId: string;
   createdAt: string;
   updatedAt: string;
@@ -15,6 +16,7 @@ export interface AddItemDto {
   name: string;
   description: string;
   price: number;
+  quantity: number;
 }
 
 export interface UpdateItemDto {
@@ -22,6 +24,7 @@ export interface UpdateItemDto {
   name?: string;
   description?: string;
   price?: number;
+  quantity?: number;
 }
 
 class ItemsApi {

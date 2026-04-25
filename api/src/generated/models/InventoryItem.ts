@@ -28,10 +28,12 @@ export type AggregateInventoryItem = {
 
 export type InventoryItemAvgAggregateOutputType = {
   price: number | null
+  quantity: number | null
 }
 
 export type InventoryItemSumAggregateOutputType = {
   price: number | null
+  quantity: number | null
 }
 
 export type InventoryItemMinAggregateOutputType = {
@@ -39,6 +41,7 @@ export type InventoryItemMinAggregateOutputType = {
   name: string | null
   description: string | null
   price: number | null
+  quantity: number | null
   tableId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +52,7 @@ export type InventoryItemMaxAggregateOutputType = {
   name: string | null
   description: string | null
   price: number | null
+  quantity: number | null
   tableId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -59,6 +63,7 @@ export type InventoryItemCountAggregateOutputType = {
   name: number
   description: number
   price: number
+  quantity: number
   tableId: number
   createdAt: number
   updatedAt: number
@@ -68,10 +73,12 @@ export type InventoryItemCountAggregateOutputType = {
 
 export type InventoryItemAvgAggregateInputType = {
   price?: true
+  quantity?: true
 }
 
 export type InventoryItemSumAggregateInputType = {
   price?: true
+  quantity?: true
 }
 
 export type InventoryItemMinAggregateInputType = {
@@ -79,6 +86,7 @@ export type InventoryItemMinAggregateInputType = {
   name?: true
   description?: true
   price?: true
+  quantity?: true
   tableId?: true
   createdAt?: true
   updatedAt?: true
@@ -89,6 +97,7 @@ export type InventoryItemMaxAggregateInputType = {
   name?: true
   description?: true
   price?: true
+  quantity?: true
   tableId?: true
   createdAt?: true
   updatedAt?: true
@@ -99,6 +108,7 @@ export type InventoryItemCountAggregateInputType = {
   name?: true
   description?: true
   price?: true
+  quantity?: true
   tableId?: true
   createdAt?: true
   updatedAt?: true
@@ -196,6 +206,7 @@ export type InventoryItemGroupByOutputType = {
   name: string
   description: string
   price: number
+  quantity: number
   tableId: string
   createdAt: Date
   updatedAt: Date
@@ -229,6 +240,7 @@ export type InventoryItemWhereInput = {
   name?: Prisma.StringFilter<"InventoryItem"> | string
   description?: Prisma.StringFilter<"InventoryItem"> | string
   price?: Prisma.FloatFilter<"InventoryItem"> | number
+  quantity?: Prisma.IntFilter<"InventoryItem"> | number
   tableId?: Prisma.StringFilter<"InventoryItem"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InventoryItem"> | Date | string
@@ -240,6 +252,7 @@ export type InventoryItemOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   tableId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -254,6 +267,7 @@ export type InventoryItemWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"InventoryItem"> | string
   description?: Prisma.StringFilter<"InventoryItem"> | string
   price?: Prisma.FloatFilter<"InventoryItem"> | number
+  quantity?: Prisma.IntFilter<"InventoryItem"> | number
   tableId?: Prisma.StringFilter<"InventoryItem"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InventoryItem"> | Date | string
@@ -265,6 +279,7 @@ export type InventoryItemOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   tableId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -283,6 +298,7 @@ export type InventoryItemScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"InventoryItem"> | string
   description?: Prisma.StringWithAggregatesFilter<"InventoryItem"> | string
   price?: Prisma.FloatWithAggregatesFilter<"InventoryItem"> | number
+  quantity?: Prisma.IntWithAggregatesFilter<"InventoryItem"> | number
   tableId?: Prisma.StringWithAggregatesFilter<"InventoryItem"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"InventoryItem"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"InventoryItem"> | Date | string
@@ -293,6 +309,7 @@ export type InventoryItemCreateInput = {
   name: string
   description: string
   price: number
+  quantity?: number
   createdAt?: Date | string
   updatedAt?: Date | string
   table: Prisma.InventoryTableCreateNestedOneWithoutItemsInput
@@ -303,6 +320,7 @@ export type InventoryItemUncheckedCreateInput = {
   name: string
   description: string
   price: number
+  quantity?: number
   tableId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -313,6 +331,7 @@ export type InventoryItemUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   table?: Prisma.InventoryTableUpdateOneRequiredWithoutItemsNestedInput
@@ -323,6 +342,7 @@ export type InventoryItemUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   tableId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -333,6 +353,7 @@ export type InventoryItemCreateManyInput = {
   name: string
   description: string
   price: number
+  quantity?: number
   tableId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -343,6 +364,7 @@ export type InventoryItemUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -352,6 +374,7 @@ export type InventoryItemUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   tableId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -372,6 +395,7 @@ export type InventoryItemCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   tableId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -379,6 +403,7 @@ export type InventoryItemCountOrderByAggregateInput = {
 
 export type InventoryItemAvgOrderByAggregateInput = {
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
 }
 
 export type InventoryItemMaxOrderByAggregateInput = {
@@ -386,6 +411,7 @@ export type InventoryItemMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   tableId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -396,6 +422,7 @@ export type InventoryItemMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   tableId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -403,6 +430,7 @@ export type InventoryItemMinOrderByAggregateInput = {
 
 export type InventoryItemSumOrderByAggregateInput = {
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
 }
 
 export type InventoryItemCreateNestedManyWithoutTableInput = {
@@ -460,6 +488,7 @@ export type InventoryItemCreateWithoutTableInput = {
   name: string
   description: string
   price: number
+  quantity?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -469,6 +498,7 @@ export type InventoryItemUncheckedCreateWithoutTableInput = {
   name: string
   description: string
   price: number
+  quantity?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -507,6 +537,7 @@ export type InventoryItemScalarWhereInput = {
   name?: Prisma.StringFilter<"InventoryItem"> | string
   description?: Prisma.StringFilter<"InventoryItem"> | string
   price?: Prisma.FloatFilter<"InventoryItem"> | number
+  quantity?: Prisma.IntFilter<"InventoryItem"> | number
   tableId?: Prisma.StringFilter<"InventoryItem"> | string
   createdAt?: Prisma.DateTimeFilter<"InventoryItem"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"InventoryItem"> | Date | string
@@ -517,6 +548,7 @@ export type InventoryItemCreateManyTableInput = {
   name: string
   description: string
   price: number
+  quantity?: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -526,6 +558,7 @@ export type InventoryItemUpdateWithoutTableInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -535,6 +568,7 @@ export type InventoryItemUncheckedUpdateWithoutTableInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -544,6 +578,7 @@ export type InventoryItemUncheckedUpdateManyWithoutTableInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.FloatFieldUpdateOperationsInput | number
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -555,6 +590,7 @@ export type InventoryItemSelect<ExtArgs extends runtime.Types.Extensions.Interna
   name?: boolean
   description?: boolean
   price?: boolean
+  quantity?: boolean
   tableId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -566,6 +602,7 @@ export type InventoryItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   name?: boolean
   description?: boolean
   price?: boolean
+  quantity?: boolean
   tableId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -577,6 +614,7 @@ export type InventoryItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   name?: boolean
   description?: boolean
   price?: boolean
+  quantity?: boolean
   tableId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -588,12 +626,13 @@ export type InventoryItemSelectScalar = {
   name?: boolean
   description?: boolean
   price?: boolean
+  quantity?: boolean
   tableId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type InventoryItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "price" | "tableId" | "createdAt" | "updatedAt", ExtArgs["result"]["inventoryItem"]>
+export type InventoryItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "price" | "quantity" | "tableId" | "createdAt" | "updatedAt", ExtArgs["result"]["inventoryItem"]>
 export type InventoryItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   table?: boolean | Prisma.InventoryTableDefaultArgs<ExtArgs>
 }
@@ -614,6 +653,7 @@ export type $InventoryItemPayload<ExtArgs extends runtime.Types.Extensions.Inter
     name: string
     description: string
     price: number
+    quantity: number
     tableId: string
     createdAt: Date
     updatedAt: Date
@@ -1045,6 +1085,7 @@ export interface InventoryItemFieldRefs {
   readonly name: Prisma.FieldRef<"InventoryItem", 'String'>
   readonly description: Prisma.FieldRef<"InventoryItem", 'String'>
   readonly price: Prisma.FieldRef<"InventoryItem", 'Float'>
+  readonly quantity: Prisma.FieldRef<"InventoryItem", 'Int'>
   readonly tableId: Prisma.FieldRef<"InventoryItem", 'String'>
   readonly createdAt: Prisma.FieldRef<"InventoryItem", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"InventoryItem", 'DateTime'>

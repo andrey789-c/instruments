@@ -1,4 +1,4 @@
-import { IsString, MaxLength, IsNumber, Min, IsUUID, IsOptional } from 'class-validator';
+import { IsString, MaxLength, IsNumber, Min, IsUUID, IsOptional, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class UpdateItemDto {
@@ -20,4 +20,10 @@ export class UpdateItemDto {
   @IsNumber()
   @Min(0)
   price?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  quantity?: number;
 }

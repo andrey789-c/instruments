@@ -23,7 +23,7 @@ model User {
   ownerId          String?
   telegramId       String?
 
-  phone         String? @unique // номер в формате 77001234567
+  phone         String? @unique
   phoneVerified Boolean @default(false)
 
   createdAt DateTime @default(now())
@@ -35,7 +35,7 @@ model User {
 
 model PasswordResetToken {
   id        String    @id @default(uuid())
-  code      String // 6-значный OTP-код
+  code      String
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
@@ -71,6 +71,7 @@ model InventoryItem {
   name        String
   description String
   price       Float
+  quantity    Int    @default(0) 
 
   tableId String
   table   InventoryTable @relation(fields: [tableId], references: [id], onDelete: Cascade)

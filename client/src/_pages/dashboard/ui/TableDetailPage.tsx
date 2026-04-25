@@ -1,490 +1,453 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { authApi, tablesApi, itemsApi } from '@/src/shared/api';
-import type { User } from '@/src/shared/api/authApi';
-import type { Item } from '@/src/shared/api/itemApi';
 import {
-  Package, ArrowLeft, Plus, Trash2, Loader2, Check, X,
-  ChevronUp, ChevronDown, Search, Download,
+  Plus, Download, Search, ArrowLeft, Pencil, Trash2,
+  Check, X, Package, AlertTriangle, XCircle,
 } from 'lucide-react';
+import { tablesApi, type Table } from '@/src/shared/api/tablesApi';
+import { itemsApi, type Item } from '@/src/shared/api/itemApi';
+import { filesApi } from '@/src/shared/api/fileApi';
+import { authApi } from '@/src/shared/api';
 
-interface TableDetail {
-  id: string;
-  name: string;
-  ownerId: string;
-  totalPrice: number;
-  items: Item[];
+function getStatus(qty: number): { label: string; cls: string } {
+  if (qty === 0)  return { label: 'Нет',       cls: 'bg-red-500/10 text-red-500 border-red-500/25' };
+  if (qty < 5)   return { label: 'Мало',       cls: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/25' };
+  return           { label: 'В наличии', cls: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/25' };
 }
 
-interface Props {
-  tableId: string;
+function StatusBadge({ qty }: { qty: number }) {
+  const { label, cls } = getStatus(qty);
+  return (
+    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border w-fit ${cls}`}>
+      {label}
+    </span>
+  );
 }
 
-interface EditingCell {
-  itemId: string;
-  field: 'name' | 'description' | 'price';
-}
+// ─── inline edit cell ─────────────────────────────────────────────────────────
 
-export function TableDetailPage({ tableId }: Props) {
-  const router = useRouter();
+function EditableCell({
+  value,
+  onSave,
+  type = 'text',
+  min,
+}: {
+  value: string | number;
+  onSave: (v: string) => void;
+  type?: string;
+  min?: number;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(String(value));
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const [user, setUser]       = useState<User | null>(null);
-  const [table, setTable]     = useState<TableDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
-  const [search, setSearch]   = useState('');
-  const [sortField, setSortField] = useState<'name' | 'price' | null>(null);
-  const [sortDir, setSortDir]     = useState<'asc' | 'desc'>('asc');
+  useEffect(() => { if (editing) inputRef.current?.focus(); }, [editing]);
 
-  const [editingCell, setEditingCell] = useState<EditingCell | null>(null);
-  const [editValue, setEditValue]     = useState('');
-  const [saving, setSaving]           = useState(false);
+  const commit = () => { setEditing(false); onSave(draft); };
+  const cancel = () => { setEditing(false); setDraft(String(value)); };
 
-  const [showAddRow, setShowAddRow] = useState(false);
-  const [newRow, setNewRow]         = useState({ name: '', description: '', price: '' });
-  const [addingRow, setAddingRow]   = useState(false);
-
-  const [deletingRowId, setDeletingRowId] = useState<string | null>(null);
-
-  const editInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
-
-  const canEdit = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN';
-
-  const load = useCallback(async () => {
-    try {
-      const [me, t] = await Promise.all([
-        authApi.getCurrentUser(),
-        tablesApi.getById(tableId),
-      ]);
-      setUser(me);
-      setTable(t as unknown as TableDetail);
-    } catch {
-      setError('Не удалось загрузить таблицу');
-    } finally {
-      setLoading(false);
-    }
-  }, [tableId]);
-
-  useEffect(() => { load(); }, [load]);
-
-  useEffect(() => {
-    if (editingCell && editInputRef.current) {
-      editInputRef.current.focus();
-    }
-  }, [editingCell]);
-
-  const filteredItems = (table?.items ?? [])
-    .filter(item =>
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.description.toLowerCase().includes(search.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (!sortField) return 0;
-      const va = sortField === 'price' ? a.price : a.name.toLowerCase();
-      const vb = sortField === 'price' ? b.price : b.name.toLowerCase();
-      if (va < vb) return sortDir === 'asc' ? -1 : 1;
-      if (va > vb) return sortDir === 'asc' ? 1 : -1;
-      return 0;
-    });
-
-  const toggleSort = (field: 'name' | 'price') => {
-    if (sortField === field) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDir('asc');
-    }
-  };
-
-  const startEdit = (item: Item, field: 'name' | 'description' | 'price') => {
-    if (!canEdit) return;
-    setEditingCell({ itemId: item.id, field });
-    setEditValue(field === 'price' ? String(item.price) : (item[field] as string));
-  };
-
-  const cancelEdit = () => {
-    setEditingCell(null);
-    setEditValue('');
-  };
-
-  const commitEdit = async () => {
-    if (!editingCell || !table) return;
-    setSaving(true);
-    try {
-      const update: Record<string, string | number> = {};
-      if (editingCell.field === 'price') {
-        const num = parseFloat(editValue);
-        if (isNaN(num) || num < 0) { cancelEdit(); return; }
-        update.price = num;
-      } else {
-        if (!editValue.trim()) { cancelEdit(); return; }
-        update[editingCell.field] = editValue.trim();
-      }
-      const updated = await itemsApi.update({ itemId: editingCell.itemId, ...update });
-      setTable(prev => prev ? {
-        ...prev,
-        items: prev.items.map(i => i.id === updated.id ? updated : i),
-        totalPrice: prev.items.map(i => i.id === updated.id ? updated : i).reduce((s, i) => s + i.price, 0),
-      } : prev);
-      setEditingCell(null);
-    } catch { /* ignore */ } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitEdit(); }
-    if (e.key === 'Escape') cancelEdit();
-  };
-
-  const handleAddRow = async () => {
-    if (!newRow.name.trim() || !newRow.description.trim()) return;
-    const price = parseFloat(newRow.price);
-    if (isNaN(price) || price < 0) return;
-    setAddingRow(true);
-    try {
-      const item = await itemsApi.add({ tableId, name: newRow.name.trim(), description: newRow.description.trim(), price });
-      setTable(prev => prev ? {
-        ...prev,
-        items: [...prev.items, item],
-        totalPrice: prev.totalPrice + item.price,
-      } : prev);
-      setNewRow({ name: '', description: '', price: '' });
-      setShowAddRow(false);
-    } catch { /* ignore */ } finally {
-      setAddingRow(false);
-    }
-  };
-
-  const handleDeleteRow = async (id: string) => {
-    setDeletingRowId(id);
-    try {
-      await itemsApi.delete(id);
-      setTable(prev => {
-        if (!prev) return prev;
-        const items = prev.items.filter(i => i.id !== id);
-        return { ...prev, items, totalPrice: items.reduce((s, i) => s + i.price, 0) };
-      });
-    } catch { /* ignore */ } finally {
-      setDeletingRowId(null);
-    }
-  };
-
-  const exportCsv = () => {
-    if (!table) return;
-    const rows = [['Название', 'Описание', 'Цена (₽)'], ...table.items.map(i => [i.name, i.description, String(i.price)])];
-    const csv = rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(',')).join('\n');
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${table.name}.csv`;
-    a.click();
-  };
-
-  if (loading) {
+  if (!editing) {
     return (
-      <div className="min-h-screen bg-[#F8F7F4] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#FF6B35] animate-spin" />
-      </div>
+      <span
+        onClick={() => setEditing(true)}
+        className="cursor-pointer hover:text-[#FF6B35] transition-colors"
+        title="Нажмите для редактирования"
+      >
+        {value}
+      </span>
     );
   }
 
-  const SortIcon = ({ field }: { field: 'name' | 'price' }) => {
-    if (sortField !== field) return <ChevronUp size={13} className="text-[#0D0F14]/20" />;
-    return sortDir === 'asc'
-      ? <ChevronUp size={13} className="text-[#FF6B35]" />
-      : <ChevronDown size={13} className="text-[#FF6B35]" />;
+  return (
+    <span className="inline-flex items-center gap-1">
+      <input
+        ref={inputRef}
+        type={type}
+        min={min}
+        value={draft}
+        onChange={e => setDraft(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') cancel(); }}
+        className="w-full max-w-[140px] border border-[#FF6B35]/60 rounded-md px-2 py-0.5 text-sm outline-none focus:ring-2 focus:ring-[#FF6B35]/30 bg-white text-[#0D0F14]"
+      />
+      <button onClick={commit}  className="text-emerald-500 hover:text-emerald-600"><Check size={14} /></button>
+      <button onClick={cancel} className="text-[#0D0F14]/35 hover:text-[#0D0F14]/60"><X size={14} /></button>
+    </span>
+  );
+}
+
+interface AddModalProps {
+  tableId: string;
+  onClose: () => void;
+  onAdded: (item: Item) => void;
+}
+
+function AddItemModal({ tableId, onClose, onAdded }: AddModalProps) {
+  const [form, setForm] = useState({ name: '', description: '', price: '', quantity: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const submit = async () => {
+    if (!form.name.trim() ) {
+      setError('Заполните название'); return;
+    }
+    setLoading(true);
+    try {
+      const item = await itemsApi.add({
+        tableId,
+        name: form.name.trim(),
+        description: form.description.trim(),
+        price: parseFloat(form.price) || 0,
+        quantity: parseInt(form.quantity) || 0,
+      });
+      onAdded(item);
+      onClose();
+    } catch (e: any) {
+      setError(e.message || 'Ошибка');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-[0_32px_80px_rgba(0,0,0,0.18)] border border-[#0D0F14]/08 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#0D0F14]/06 bg-[#F8F7F4]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[#FF6B35] flex items-center justify-center">
+              <Plus size={14} className="text-white" />
+            </div>
+            <span className="font-bold text-[#0D0F14] text-sm">Новая позиция</span>
+          </div>
+          <button onClick={onClose} className="text-[#0D0F14]/35 hover:text-[#0D0F14]/60 transition-colors">
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 flex flex-col gap-4">
+          {error && (
+            <p className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</p>
+          )}
+          {[
+            { key: 'name',        label: 'Наименование',  placeholder: 'Наушники Sony WH-1000', type: 'text' },
+            { key: 'description', label: 'Описание',       placeholder: 'Беспроводные, шумоподавление', type: 'text' },
+            { key: 'price',       label: 'Цена (₽)',        placeholder: '4 990', type: 'number' },
+            { key: 'quantity',    label: 'Остаток (шт.)',  placeholder: '24', type: 'number' },
+          ].map(({ key, label, placeholder, type }) => (
+            <div key={key} className="flex flex-col gap-1">
+              <label className="text-[11px] font-semibold text-[#0D0F14]/45 uppercase tracking-widest">
+                {label}
+              </label>
+              <input
+                type={type}
+                min={type === 'number' ? 0 : undefined}
+                placeholder={placeholder}
+                value={form[key as keyof typeof form]}
+                onChange={set(key as keyof typeof form)}
+                className="border border-[#0D0F14]/12 rounded-xl px-4 py-2.5 text-sm text-[#0D0F14] placeholder:text-[#0D0F14]/25 outline-none focus:border-[#FF6B35] focus:ring-2 focus:ring-[#FF6B35]/20 transition-all"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 pb-5 flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 border border-[#0D0F14]/12 rounded-xl py-2.5 text-sm text-[#0D0F14]/55 font-semibold hover:bg-[#0D0F14]/[0.04] transition-colors"
+          >
+            Отмена
+          </button>
+          <button
+            onClick={submit}
+            disabled={loading}
+            className="flex-1 bg-[#FF6B35] hover:bg-[#ff7a46] rounded-xl py-2.5 text-sm text-white font-bold transition-colors disabled:opacity-50 shadow-[0_8px_24px_rgba(255,107,53,0.25)]"
+          >
+            {loading ? 'Добавляем…' : 'Добавить'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── main page ────────────────────────────────────────────────────────────────
+
+export function TableDetailPage({ tableId }: { tableId: string }) {
+  const router = useRouter();
+  const [table,   setTable]   = useState<Table & { items?: Item[] } | null>(null);
+  const [items,   setItems]   = useState<Item[]>([]);
+  const [search,  setSearch]  = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState<string | null>(null);
+  const [showAdd, setShowAdd] = useState(false);
+  const [role,    setRole]    = useState<string>('USER');
+
+  // load table + items
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [t, user] = await Promise.all([
+          tablesApi.getById(tableId),
+          authApi.getCurrentUser(),
+        ]);
+        setTable(t);
+        setItems((t as any).items ?? []);
+        setRole(user.role);
+      } catch (e: any) {
+        setError(e.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [tableId]);
+
+  const canEdit = role === 'ADMIN' || role === 'SUPERADMIN';
+
+  // inline update helper
+  const updateField = async (itemId: string, field: string, raw: string) => {
+    const val = field === 'price'    ? parseFloat(raw) || 0
+              : field === 'quantity' ? parseInt(raw)    || 0
+              : raw;
+    try {
+      const updated = await itemsApi.update({ itemId, [field]: val });
+      setItems(prev => prev.map(i => i.id === itemId ? { ...i, ...updated } : i));
+    } catch { /* ignore */ }
+  };
+
+  const deleteItem = async (id: string) => {
+    if (!confirm('Удалить позицию?')) return;
+    try {
+      await itemsApi.delete(id);
+      setItems(prev => prev.filter(i => i.id !== id));
+    } catch { /* ignore */ }
+  };
+
+  const exportExcel = async () => {
+    try {
+      const blob = await filesApi.exportExcel(tableId);
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `${table?.name ?? 'export'}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch { /* ignore */ }
+  };
+
+  const filtered = items.filter(i =>
+    i.name.toLowerCase().includes(search.toLowerCase()) ||
+    i.description.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const totalQty   = items.reduce((s, i) => s + i.quantity, 0);
+  const totalPrice = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const outOf      = items.filter(i => i.quantity === 0).length;
+
+  // ── loading / error states ─────────────────────────────────────────────────
+  if (loading) return (
+    <div className="min-h-screen bg-[#F8F7F4] flex items-center justify-center">
+      <div className="w-8 h-8 border-[3px] border-[#FF6B35]/20 border-t-[#FF6B35] rounded-full animate-spin" />
+    </div>
+  );
+
+  if (error || !table) return (
+    <div className="min-h-screen bg-[#F8F7F4] flex items-center justify-center flex-col gap-4">
+      <XCircle size={40} className="text-red-400" />
+      <p className="text-[#0D0F14]/55 text-sm">{error ?? 'Таблица не найдена'}</p>
+      <button onClick={() => router.push('/dashboard')} className="text-[#FF6B35] text-sm font-semibold hover:underline">
+        ← Назад
+      </button>
+    </div>
+  );
+
+  // ── render ─────────────────────────────────────────────────────────────────
+  return (
     <div className="min-h-screen bg-[#F8F7F4]" style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
 
-      <header className="bg-white border-b border-[#0D0F14]/08 sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="w-9 h-9 rounded-lg bg-[#0D0F14]/05 hover:bg-[#0D0F14]/10 flex items-center justify-center transition-colors shrink-0"
-            >
-              <ArrowLeft size={16} className="text-[#0D0F14]" />
-            </button>
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#FF6B35] to-[#ff7a46] flex items-center justify-center shadow-[0_4px_12px_rgba(255,107,53,0.3)] shrink-0">
-              <Package size={17} className="text-white" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="font-bold text-[#0D0F14] text-base leading-none truncate">{table?.name ?? '—'}</h1>
-              <span className="text-xs text-[#0D0F14]/40">{table?.items.length ?? 0} позиций</span>
-            </div>
-          </div>
+      {/* glow */}
+      <div className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] opacity-50"
+        style={{ background: 'radial-gradient(ellipse,rgba(255,107,53,0.10) 0%,transparent 70%)' }} />
 
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:block text-sm font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
-              {(table?.totalPrice ?? 0).toLocaleString('ru')} ₽
+      <div className="relative z-10 max-w-[1300px] mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-8">
+
+        {/* ── breadcrumb ── */}
+        <div className="flex items-center gap-2 mb-6">
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center gap-1.5 text-[#0D0F14]/40 hover:text-[#0D0F14]/70 transition-colors text-sm"
+          >
+            <ArrowLeft size={14} /> Все таблицы
+          </button>
+          <span className="text-[#0D0F14]/20">/</span>
+          <span className="text-[#0D0F14]/70 text-sm font-semibold">{table.name}</span>
+        </div>
+
+        {/* ── stats bar ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          {[
+            { label: 'Позиций',    value: items.length,                    icon: Package },
+            { label: 'Ед. на складе', value: totalQty.toLocaleString('ru'), icon: null },
+            { label: 'Стоимость',  value: `${totalPrice.toLocaleString('ru')} ₽`, icon: null },
+            { label: 'Нет в наличии', value: outOf, icon: outOf > 0 ? AlertTriangle : null, accent: outOf > 0 },
+          ].map(({ label, value, accent }) => (
+            <div key={label} className="bg-white border border-[#0D0F14]/06 rounded-2xl px-5 py-4 shadow-[0_4px_16px_rgba(0,0,0,0.04)]">
+              <p className="text-[11px] font-semibold text-[#0D0F14]/35 uppercase tracking-widest mb-1">{label}</p>
+              <p className={`text-2xl font-black ${accent ? 'text-red-500' : 'text-[#0D0F14]'}`}>{value}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ── table card ── */}
+        <div className="rounded-2xl overflow-hidden border border-[#0D0F14]/08 shadow-[0_8px_40px_rgba(0,0,0,0.07)] bg-white">
+
+          {/* chrome */}
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-[#0D0F14]/06 bg-[#0D0F14]/[0.015]">
+            <span className="w-3 h-3 rounded-full bg-red-400" />
+            <span className="w-3 h-3 rounded-full bg-yellow-400" />
+            <span className="w-3 h-3 rounded-full bg-emerald-400" />
+            <span className="ml-3 text-[11px] text-[#0D0F14]/35 font-mono truncate">
+              📦 {table.name}
             </span>
-            <button
-              onClick={exportCsv}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[#0D0F14]/50 hover:text-[#0D0F14] hover:bg-[#0D0F14]/05 transition-all text-sm font-medium"
-            >
-              <Download size={15} />
-              <span className="hidden sm:block">CSV</span>
-            </button>
-            {canEdit && (
-              <button
-                onClick={() => setShowAddRow(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#FF6B35] text-white rounded-xl font-semibold text-sm shadow-[0_4px_14px_rgba(255,107,53,0.3)] hover:bg-[#ff7a46] hover:-translate-y-0.5 transition-all"
-              >
-                <Plus size={15} /> Добавить
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-
-        {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 mb-5">{error}</div>
-        )}
-
-        <div className="flex items-center gap-3 mb-5">
-          <div className="relative flex-1 max-w-sm">
-            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#0D0F14]/30" />
-            <input
-              type="text"
-              placeholder="Поиск по названию или описанию..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-[#0D0F14]/10 rounded-xl outline-none focus:border-[#FF6B35] focus:ring-2 focus:ring-[#FF6B35]/10 text-[#0D0F14] placeholder:text-[#0D0F14]/30"
-            />
-          </div>
-          <span className="text-xs text-[#0D0F14]/40 shrink-0">
-            {filteredItems.length} из {table?.items.length ?? 0}
-          </span>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-[#0D0F14]/08 shadow-sm overflow-hidden">
-
-          <div className="grid gap-px bg-[#F8F7F4] border-b border-[#0D0F14]/08" style={{ gridTemplateColumns: canEdit ? '2fr 3fr 1fr 44px' : '2fr 3fr 1fr' }}>
-            <div
-              className="px-4 py-3 flex items-center gap-1.5 cursor-pointer hover:text-[#FF6B35] transition-colors text-xs font-semibold text-[#0D0F14]/50 uppercase tracking-widest"
-              onClick={() => toggleSort('name')}
-            >
-              Название <SortIcon field="name" />
-            </div>
-            <div className="px-4 py-3 text-xs font-semibold text-[#0D0F14]/50 uppercase tracking-widest">
-              Описание
-            </div>
-            <div
-              className="px-4 py-3 flex items-center gap-1.5 cursor-pointer hover:text-[#FF6B35] transition-colors text-xs font-semibold text-[#0D0F14]/50 uppercase tracking-widest"
-              onClick={() => toggleSort('price')}
-            >
-              Цена <SortIcon field="price" />
-            </div>
-            {canEdit && <div className="px-2 py-3" />}
           </div>
 
-          {filteredItems.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-[#0D0F14]/30 text-sm">
-                {search ? 'Ничего не найдено' : 'В таблице пока нет позиций'}
-              </p>
-              {!search && canEdit && (
+          {/* toolbar */}
+          <div className="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-[#0D0F14]/06 bg-[#0D0F14]/[0.008]">
+            {/* search */}
+            <div className="flex items-center gap-2 text-xs text-[#0D0F14]/35 bg-[#0D0F14]/[0.04] rounded-lg px-3 py-2 min-w-[200px] flex-1 max-w-[320px] border border-[#0D0F14]/08">
+              <Search size={13} />
+              <input
+                type="text"
+                placeholder="Поиск по наименованию…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="bg-transparent outline-none text-[#0D0F14]/70 placeholder:text-[#0D0F14]/30 text-sm flex-1"
+              />
+            </div>
+
+            <div className="ml-auto flex items-center gap-2">
+              {canEdit && (
                 <button
-                  onClick={() => setShowAddRow(true)}
-                  className="mt-3 text-sm text-[#FF6B35] font-semibold hover:underline"
+                  onClick={() => setShowAdd(true)}
+                  className="flex items-center gap-1.5 text-xs text-[#FF6B35] bg-[#FF6B35]/10 border border-[#FF6B35]/25 rounded-lg px-3 py-2 cursor-pointer hover:bg-[#FF6B35]/20 transition-colors font-semibold"
                 >
-                  Добавить первую позицию
+                  <Plus size={13} /> Добавить
                 </button>
               )}
-            </div>
-          ) : (
-            filteredItems.map((item, idx) => (
-              <div
-                key={item.id}
-                className={`grid gap-px border-b border-[#0D0F14]/05 last:border-0 group transition-colors ${
-                  deletingRowId === item.id ? 'opacity-50' : 'hover:bg-[#FF6B35]/[0.02]'
-                }`}
-                style={{ gridTemplateColumns: canEdit ? '2fr 3fr 1fr 44px' : '2fr 3fr 1fr' }}
-              >
-                {/* Name */}
-                <div
-                  className={`px-4 py-3.5 flex items-center ${canEdit ? 'cursor-text' : ''}`}
-                  onClick={() => startEdit(item, 'name')}
-                >
-                  {editingCell?.itemId === item.id && editingCell.field === 'name' ? (
-                    <div className="flex items-center gap-1.5 w-full" onClick={e => e.stopPropagation()}>
-                      <input
-                        ref={el => { editInputRef.current = el; }}
-                        type="text"
-                        value={editValue}
-                        onChange={e => setEditValue(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        className="flex-1 px-2 py-1 text-sm border border-[#FF6B35] rounded-lg outline-none text-[#0D0F14] min-w-0"
-                      />
-                      <button onClick={commitEdit} disabled={saving} className="w-6 h-6 rounded bg-emerald-500 text-white flex items-center justify-center shrink-0">
-                        {saving ? <Loader2 size={10} className="animate-spin" /> : <Check size={10} />}
-                      </button>
-                      <button onClick={cancelEdit} className="w-6 h-6 rounded bg-[#0D0F14]/08 text-[#0D0F14]/60 flex items-center justify-center shrink-0">
-                        <X size={10} />
-                      </button>
-                    </div>
-                  ) : (
-                    <span className={`text-sm font-medium text-[#0D0F14] truncate ${canEdit ? 'group-hover:text-[#FF6B35] transition-colors' : ''}`}>
-                      {item.name}
-                    </span>
-                  )}
-                </div>
-
-                <div
-                  className={`px-4 py-3.5 flex items-center ${canEdit ? 'cursor-text' : ''}`}
-                  onClick={() => startEdit(item, 'description')}
-                >
-                  {editingCell?.itemId === item.id && editingCell.field === 'description' ? (
-                    <div className="flex items-center gap-1.5 w-full" onClick={e => e.stopPropagation()}>
-                      <input
-                        ref={el => { editInputRef.current = el; }}
-                        type="text"
-                        value={editValue}
-                        onChange={e => setEditValue(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        className="flex-1 px-2 py-1 text-sm border border-[#FF6B35] rounded-lg outline-none text-[#0D0F14] min-w-0"
-                      />
-                      <button onClick={commitEdit} disabled={saving} className="w-6 h-6 rounded bg-emerald-500 text-white flex items-center justify-center shrink-0">
-                        {saving ? <Loader2 size={10} className="animate-spin" /> : <Check size={10} />}
-                      </button>
-                      <button onClick={cancelEdit} className="w-6 h-6 rounded bg-[#0D0F14]/08 text-[#0D0F14]/60 flex items-center justify-center shrink-0">
-                        <X size={10} />
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="text-sm text-[#0D0F14]/60 truncate">{item.description}</span>
-                  )}
-                </div>
-
-                <div
-                  className={`px-4 py-3.5 flex items-center ${canEdit ? 'cursor-text' : ''}`}
-                  onClick={() => startEdit(item, 'price')}
-                >
-                  {editingCell?.itemId === item.id && editingCell.field === 'price' ? (
-                    <div className="flex items-center gap-1.5 w-full" onClick={e => e.stopPropagation()}>
-                      <input
-                        ref={el => { editInputRef.current = el; }}
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={editValue}
-                        onChange={e => setEditValue(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        className="flex-1 px-2 py-1 text-sm border border-[#FF6B35] rounded-lg outline-none text-[#0D0F14] min-w-0"
-                      />
-                      <button onClick={commitEdit} disabled={saving} className="w-6 h-6 rounded bg-emerald-500 text-white flex items-center justify-center shrink-0">
-                        {saving ? <Loader2 size={10} className="animate-spin" /> : <Check size={10} />}
-                      </button>
-                      <button onClick={cancelEdit} className="w-6 h-6 rounded bg-[#0D0F14]/08 text-[#0D0F14]/60 flex items-center justify-center shrink-0">
-                        <X size={10} />
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="text-sm font-semibold text-[#0D0F14]">
-                      {item.price.toLocaleString('ru')} ₽
-                    </span>
-                  )}
-                </div>
-
-                {canEdit && (
-                  <div className="flex items-center justify-center">
-                    <button
-                      onClick={() => handleDeleteRow(item.id)}
-                      disabled={deletingRowId === item.id}
-                      className="w-8 h-8 rounded-lg text-[#0D0F14]/20 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 flex items-center justify-center"
-                    >
-                      {deletingRowId === item.id
-                        ? <Loader2 size={13} className="animate-spin" />
-                        : <Trash2 size={13} />}
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-
-          {filteredItems.length > 0 && (
-            <div
-              className="grid border-t border-[#0D0F14]/10 bg-[#F8F7F4]"
-              style={{ gridTemplateColumns: canEdit ? '2fr 3fr 1fr 44px' : '2fr 3fr 1fr' }}
-            >
-              <div className="px-4 py-3 text-xs font-semibold text-[#0D0F14]/40 uppercase tracking-widest col-span-2">
-                Итого
-              </div>
-              <div className="px-4 py-3 text-sm font-black text-[#0D0F14]">
-                {filteredItems.reduce((s, i) => s + i.price, 0).toLocaleString('ru')} ₽
-              </div>
-              {canEdit && <div />}
-            </div>
-          )}
-        </div>
-      </main>
-
-      {showAddRow && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md border border-[#0D0F14]/08">
-            <h3 className="text-lg font-bold text-[#0D0F14] mb-5">Новая позиция</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-semibold text-[#0D0F14]/50 uppercase tracking-widest block mb-1.5">Название</label>
-                <input
-                  type="text"
-                  placeholder="Перфоратор Bosch GBH 2-26"
-                  value={newRow.name}
-                  onChange={e => setNewRow(p => ({ ...p, name: e.target.value }))}
-                  autoFocus
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#0D0F14]/15 text-sm text-[#0D0F14] outline-none focus:border-[#FF6B35] focus:ring-2 focus:ring-[#FF6B35]/15"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-[#0D0F14]/50 uppercase tracking-widest block mb-1.5">Описание</label>
-                <input
-                  type="text"
-                  placeholder="Ударный режим, 800 Вт, SDS-plus"
-                  value={newRow.description}
-                  onChange={e => setNewRow(p => ({ ...p, description: e.target.value }))}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#0D0F14]/15 text-sm text-[#0D0F14] outline-none focus:border-[#FF6B35] focus:ring-2 focus:ring-[#FF6B35]/15"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-[#0D0F14]/50 uppercase tracking-widest block mb-1.5">Цена, ₽</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="12500"
-                  value={newRow.price}
-                  onChange={e => setNewRow(p => ({ ...p, price: e.target.value }))}
-                  onKeyDown={e => e.key === 'Enter' && handleAddRow()}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#0D0F14]/15 text-sm text-[#0D0F14] outline-none focus:border-[#FF6B35] focus:ring-2 focus:ring-[#FF6B35]/15"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 mt-5">
               <button
-                onClick={() => { setShowAddRow(false); setNewRow({ name: '', description: '', price: '' }); }}
-                className="flex-1 py-2.5 rounded-xl border border-[#0D0F14]/15 text-sm font-medium text-[#0D0F14]/60 hover:bg-[#0D0F14]/05 transition-all"
+                onClick={exportExcel}
+                className="flex items-center gap-1.5 text-xs text-[#0D0F14]/45 bg-[#0D0F14]/[0.04] border border-[#0D0F14]/08 rounded-lg px-3 py-2 cursor-pointer hover:bg-[#0D0F14]/[0.08] transition-colors font-semibold"
               >
-                Отмена
-              </button>
-              <button
-                onClick={handleAddRow}
-                disabled={addingRow || !newRow.name.trim() || !newRow.description.trim() || !newRow.price}
-                className="flex-1 py-2.5 rounded-xl bg-[#FF6B35] text-white text-sm font-semibold disabled:opacity-50 hover:bg-[#ff7a46] transition-all flex items-center justify-center gap-2"
-              >
-                {addingRow ? <Loader2 size={14} className="animate-spin" /> : null}
-                Добавить
+                <Download size={13} /> Экспорт
               </button>
             </div>
           </div>
+
+          {/* table */}
+          <div className="overflow-x-auto">
+            <div className="min-w-[720px]">
+
+              {/* head */}
+              <div className="grid grid-cols-[2.5fr_1.5fr_1fr_1fr_1fr_auto] px-4 py-2.5 border-b border-[#0D0F14]/06 bg-[#0D0F14]/[0.015]">
+                {['Наименование', 'Описание', 'Цена', 'Остаток', 'Статус', ''].map((h, i) => (
+                  <span key={i} className="text-[10px] font-semibold text-[#0D0F14]/30 uppercase tracking-widest">
+                    {h}
+                  </span>
+                ))}
+              </div>
+
+              {/* rows */}
+              {filtered.length === 0 ? (
+                <div className="flex flex-col items-center gap-3 py-16 text-[#0D0F14]/30">
+                  <Package size={32} />
+                  <p className="text-sm">{search ? 'Ничего не найдено' : 'Нет позиций — добавьте первую'}</p>
+                </div>
+              ) : filtered.map((item) => (
+                <div
+                  key={item.id}
+                  className="relative grid grid-cols-[2.5fr_1.5fr_1fr_1fr_1fr_auto] px-4 py-3 border-b border-[#0D0F14]/[0.05] hover:bg-[#FF6B35]/[0.03] transition-colors duration-200 group items-center"
+                >
+                  {/* name */}
+                  <span className="text-sm text-[#0D0F14]/85 font-medium truncate pr-4">
+                    {canEdit
+                      ? <EditableCell value={item.name} onSave={v => updateField(item.id, 'name', v)} />
+                      : item.name}
+                  </span>
+
+                  {/* description */}
+                  <span className="text-xs text-[#0D0F14]/45 truncate pr-4">
+                    {canEdit
+                      ? <EditableCell value={item.description} onSave={v => updateField(item.id, 'description', v)} />
+                      : item.description}
+                  </span>
+
+                  {/* price */}
+                  <span className="text-sm text-[#0D0F14]/70 font-mono">
+                    {canEdit
+                      ? <EditableCell value={item.price} type="number" min={0} onSave={v => updateField(item.id, 'price', v)} />
+                      : `${item.price.toLocaleString('ru')} ₽`}
+                  </span>
+
+                  {/* quantity */}
+                  <span className="text-sm text-[#0D0F14]/70 font-semibold">
+                    {canEdit
+                      ? <EditableCell value={item.quantity} type="number" min={0} onSave={v => updateField(item.id, 'quantity', v)} />
+                      : item.quantity}
+                  </span>
+
+                  {/* status */}
+                  <StatusBadge qty={item.quantity} />
+
+                  {/* actions */}
+                  <div className="absolute right-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity pl-2">
+                    {canEdit && (
+                      <button
+                        onClick={() => deleteItem(item.id)}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-[#0D0F14]/25 hover:text-red-500 hover:bg-red-50 transition-all"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* footer */}
+          {filtered.length > 0 && (
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[#0D0F14]/06 bg-[#0D0F14]/[0.008]">
+              <span className="text-xs text-[#0D0F14]/35">
+                {filtered.length} из {items.length} позиций
+              </span>
+              <span className="text-xs font-semibold text-[#0D0F14]/50">
+                Итого: <span className="text-[#FF6B35]">{totalPrice.toLocaleString('ru')} ₽</span>
+              </span>
+            </div>
+          )}
         </div>
+
+        {/* hint for inline edit */}
+        {canEdit && items.length > 0 && (
+          <p className="text-center text-[11px] text-[#0D0F14]/30 mt-4 flex items-center justify-center gap-1.5">
+            <Pencil size={11} /> Нажмите на ячейку, чтобы изменить значение
+          </p>
+        )}
+      </div>
+
+      {/* add modal */}
+      {showAdd && (
+        <AddItemModal
+          tableId={tableId}
+          onClose={() => setShowAdd(false)}
+          onAdded={item => setItems(prev => [...prev, item])}
+        />
       )}
     </div>
   );

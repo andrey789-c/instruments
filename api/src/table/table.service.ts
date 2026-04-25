@@ -12,7 +12,7 @@ export class TableService {
         id: true,
         name: true,
         items: {
-          select:{price:true}
+          select: { price: true, quantity: true }
         }
       },
     });
@@ -20,7 +20,8 @@ export class TableService {
     return tables.map((table) => ({
       id: table.id,
       name: table.name,
-      totalPrice: table.items.reduce((sum, item) => sum + item.price, 0),
+      totalPrice: table.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      totalQuantity: table.items.reduce((sum, item) => sum + item.quantity, 0),
     }));
   }
 
@@ -29,109 +30,74 @@ export class TableService {
       where: { id: tableId, ownerId },
       include: {
         items: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-          },
+          omit: { createdAt: true, updatedAt: true },
         },
-        // owner: { select: { id: true, email: true, role: true } },
       },
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
+      omit: { createdAt: true, updatedAt: true },
     });
 
     if (!table) throw new NotFoundException("Table not found");
 
-    const totalPrice = table.items.reduce((sum, item) => sum + item.price, 0);
+    const totalPrice    = table.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const totalQuantity = table.items.reduce((sum, item) => sum + item.quantity, 0);
 
-    return { ...table, totalPrice };
+    return { ...table, totalPrice, totalQuantity };
   }
 
   async createTable(name: string, ownerId: string) {
     return this.prisma.inventoryTable.create({
-      data: {
-        name,
-        ownerId,
-      },
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
+      data: { name, ownerId },
+      omit: { createdAt: true, updatedAt: true },
     });
   }
 
   async updateTable(tableId: string, name: string, ownerId: string) {
-    const table = await this.prisma.inventoryTable.findUnique({
-      where: { id: tableId, ownerId },
-    });
+    const table = await this.prisma.inventoryTable.findUnique({ where: { id: tableId, ownerId } });
     if (!table) throw new NotFoundException("Table not found");
 
     return this.prisma.inventoryTable.update({
       where: { id: tableId },
       data: { name },
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
+      omit: { createdAt: true, updatedAt: true },
     });
   }
 
   async deleteTable(tableId: string, ownerId: string) {
-    const table = await this.prisma.inventoryTable.findUnique({
-      where: { id: tableId, ownerId },
-    });
+    const table = await this.prisma.inventoryTable.findUnique({ where: { id: tableId, ownerId } });
     if (!table) throw new NotFoundException("Table not found");
 
     return this.prisma.inventoryTable.delete({
       where: { id: tableId },
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
+      omit: { createdAt: true, updatedAt: true },
     });
   }
 
   async addItem(
     tableId: string,
-    dto: { name: string; description: string; price: number },
+    dto: { name: string; description: string; price: number; quantity: number },
     ownerId: string,
   ) {
-    const table = await this.prisma.inventoryTable.findUnique({
-      where: { id: tableId, ownerId },
-    });
+    const table = await this.prisma.inventoryTable.findUnique({ where: { id: tableId, ownerId } });
     if (!table) throw new NotFoundException("Table not found");
 
     return this.prisma.inventoryItem.create({
-      data: {
-        ...dto,
-        tableId,
-      },
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
+      data: { ...dto, tableId },
+      omit: { createdAt: true, updatedAt: true },
     });
   }
 
   async updateItem(
     itemId: string,
-    dto: { name?: string; description?: string; price?: number },
+    dto: { name?: string; description?: string; price?: number; quantity?: number },
     ownerId: string,
   ) {
-    const item = await this.prisma.inventoryItem.findUnique({
-      where: { id: itemId },
-    });
+    const item = await this.prisma.inventoryItem.findUnique({ where: { id: itemId } });
     if (!item) throw new NotFoundException("Item not found");
 
     return this.prisma.inventoryItem.update({
       where: { id: itemId, table: { ownerId } },
       data: dto,
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
+      omit: { createdAt: true, updatedAt: true },
     });
   }
 
@@ -143,10 +109,7 @@ export class TableService {
 
     return this.prisma.inventoryItem.delete({
       where: { id: itemId },
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
+      omit: { createdAt: true, updatedAt: true },
     });
   }
 }
