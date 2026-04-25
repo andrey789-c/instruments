@@ -10,6 +10,10 @@ import {
   Layers, TrendingUp, Users, Trash2, Edit3, Check, X,
 } from 'lucide-react';
 
+interface TableWithItems {
+  items?: { price: number }[];
+}
+
 export function DashboardPage() {
   const router = useRouter();
 
@@ -41,8 +45,23 @@ export function DashboardPage() {
         authApi.getCurrentUser(),
         tablesApi.getAll(),
       ]);
+
+      // Keep dashboard totals in sync with table detail page:
+      // derive sum from actual items when backend returns them.
+      const enriched = await Promise.all(
+        all.map(async (table) => {
+          try {
+            const detailed = await tablesApi.getById(table.id) as TableWithItems;
+            const computedTotal = (detailed.items ?? []).reduce((sum, item) => sum + item.price, 0);
+            return { ...table, totalPrice: computedTotal };
+          } catch {
+            return table;
+          }
+        })
+      );
+
       setUser(me);
-      setTables(all);
+      setTables(enriched);
     } catch {
       setError('Не удалось загрузить данные');
     } finally {
