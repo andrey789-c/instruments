@@ -1,6 +1,6 @@
 export {apiClient} from './apiClient'
-export {authApi} from './authApi'
+export {authApi, ApiError} from './authApi'
 export {filesApi} from './fileApi'
 export {itemsApi} from './itemApi'
 export {tablesApi} from './tablesApi'
-export {usersApi} from './userApi'
+export {usersApi} from './usersApi'

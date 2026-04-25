@@ -1,21 +1,21 @@
 'use client'
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
+import { authApi } from '@/src/shared/api';
 import { pricingPlans } from '../config/pricing';
 import { PricingCard } from './PricingCard';
 
 export const PricingSection: React.FC = () => {
+  const router = useRouter();
+
   const handlePlanSelect = (planId: string) => {
-    // TODO: Интеграция с роутером или модалкой регистрации
-    console.log('Selected plan:', planId);
-    
-    // Временное решение - скролл к форме регистрации
-    const registerSection = document.getElementById('register');
-    if (registerSection) {
-      registerSection.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      alert(`Вы выбрали план: ${planId}. Регистрация в разработке!`);
+    if (authApi.isAuthenticated()) {
+      router.push('/dashboard');
+      return;
     }
+
+    router.push('/auth/register');
   };
 
   return (

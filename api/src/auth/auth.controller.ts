@@ -22,7 +22,12 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { TelegramBotService } from 'src/telegram/telegram-bot.service';
- 
+
+// 30 дней — для "Запомнить меня"
+const REMEMBER_ME_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
+// 24 часа — обычная сессия
+const SESSION_MAX_AGE = 24 * 60 * 60 * 1000;
+
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -30,28 +35,35 @@ export class AuthController {
     private users: UsersService,
     private tgBot: TelegramBotService,
   ) {}
- 
+
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
+  async login(
+    @Body() body: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const user = await this.auth.validateUser(body.email, body.password);
     if (!user) throw new UnauthorizedException('Неверный email или пароль');
     if (!user.phoneVerified) {
-      throw new UnauthorizedException(
-        'Сначала подтвердите номер телефона через Telegram.',
-      );
+      throw new UnauthorizedException({
+        message: 'Сначала подтвердите номер телефона через Telegram.',
+        phone: user.phone,
+      });
     }
- 
+
     const { access_token } = await this.auth.login(user);
- 
+
+    const maxAge = body.rememberMe ? REMEMBER_ME_MAX_AGE : SESSION_MAX_AGE;
+
     res.cookie('auth_token', access_token, {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      // Если rememberMe — долгая кука, иначе — сессионная (браузер удалит при закрытии)
+      ...(body.rememberMe ? { maxAge } : {}),
       path: '/',
     });
- 
+
     return {
       success: true,
       user: {
@@ -62,27 +74,26 @@ export class AuthController {
       },
     };
   }
- 
+
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('auth_token', { path: '/' });
     return { success: true };
   }
- 
+
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() dto: CreateUserDto) {
-    // Самостоятельная регистрация — всегда SUPERADMIN (владелец организации)
     return this.users.createUser({ ...dto, role: 'SUPERADMIN' });
   }
- 
+
   @UseGuards(JwtAuthGuard)
   @Post('create')
   async create(@Body() dto: CreateUserDto) {
     return this.users.createUser({ ...dto, role: 'SUPERADMIN' });
   }
- 
+
   @UseGuards(JwtAuthGuard)
   @Post('me')
   async getCurrentUser(@Request() req) {
@@ -96,37 +107,34 @@ export class AuthController {
       phoneVerified: req.user.phoneVerified,
     };
   }
- 
+
   // ─── Password Reset ───────────────────────────────────────────────────
- 
+
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
     await this.auth.sendOtp(dto.email);
-    return { message: 'Если аккаунт существует и привязан Telegram — код отправлен.' };
+    return {
+      message: 'Если аккаунт существует и привязан Telegram — код отправлен.',
+    };
   }
- 
+
   @Post('verify-otp')
   @HttpCode(HttpStatus.OK)
   async verifyOtp(@Body() dto: VerifyOtpDto) {
     const resetToken = await this.auth.verifyOtp(dto.email, dto.code);
     return { resetToken };
   }
- 
+
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() dto: ResetPasswordDto) {
     await this.auth.resetPassword(dto.resetToken, dto.password);
     return { message: 'Пароль успешно изменён.' };
   }
- 
-  // ─── Phone Verification (NEW) ─────────────────────────────────────────
- 
-  /**
-   * Генерирует deep link для кнопки «Подтвердить через Telegram»
-   * Body: { phone: string }
-   * Returns: { url: string; hash: string }
-   */
+
+  // ─── Phone Verification ─────────────────────────────────────────────
+
   @Post('phone/deep-link')
   @HttpCode(HttpStatus.OK)
   async getPhoneDeepLink(@Body('phone') phone: string) {
@@ -135,7 +143,7 @@ export class AuthController {
     }
     return this.tgBot.generateDeepLink(phone);
   }
- 
+
   @Get('phone/status')
   async getPhoneStatus(@Query('phone') phone: string) {
     if (!phone) throw new BadRequestException('Укажите phone');

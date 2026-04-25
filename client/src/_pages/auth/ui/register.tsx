@@ -119,9 +119,6 @@ export const Register = () => {
   };
   const ps = getPasswordStrength();
 
-  // ════════════════════════════════════════════════════════════════
-  // ШАГ 2 — Верификация телефона
-  // ════════════════════════════════════════════════════════════════
   if (step === 'verify-phone') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#F8F7F4] via-[#F0EDE8] to-[#F8F7F4] flex items-center justify-center p-4">
@@ -200,7 +197,7 @@ export const Register = () => {
             <div className="bg-white rounded-3xl shadow-[0_20px_80px_rgba(0,0,0,0.12)] p-8 lg:p-10 border border-[#0D0F14]/05">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-[#0D0F14] mb-2">Создать аккаунт</h2>
-                <p className="text-[#0D0F14]/50">Начните работу бесплатно</p>
+                <p className="text-[#0D0F14]/50">Подключите команду и начните учёт</p>
               </div>
 
               <form onSubmit={handleSubmitForm} className="space-y-5">
@@ -349,14 +346,16 @@ export const Register = () => {
               </div>
             </div>
             <h2 className="text-4xl font-black text-[#0D0F14] leading-tight">
-              Начните работу<br /><span className="text-[#FF6B35]">бесплатно</span>
+              Сделайте склад
+              <br />
+              <span className="text-[#FF6B35]">прозрачным и спокойным</span>
             </h2>
             <div className="space-y-4 pt-4">
               {[
-                { title: '14 дней бесплатно', desc: 'Полный доступ ко всем функциям' },
-                { title: 'Без кредитной карты', desc: 'Не требуется оплата для старта' },
-                { title: 'Поддержка 24/7', desc: 'Готовы помочь в любое время' },
-                { title: 'Безопасность данных', desc: 'SSL шифрование и резервное копирование' },
+                { title: 'Порядок в остатках', desc: 'Видно, что есть на складе прямо сейчас' },
+                { title: 'Роли для сотрудников', desc: 'Каждому можно дать только нужный доступ' },
+                { title: 'Быстрый старт', desc: 'Регистрация и первая таблица за несколько минут' },
+                { title: 'Надёжное хранение', desc: 'Данные защищены и доступны в любое время' },
               ].map((item, i) => (
                 <div key={i} className="flex gap-4 p-4 bg-white rounded-xl border border-[#0D0F14]/08 shadow-sm">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#FF6B35]/10 to-[#FF6B35]/5 border border-[#FF6B35]/20 flex items-center justify-center shrink-0">

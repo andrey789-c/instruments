@@ -156,6 +156,9 @@ export class TelegramBotService implements OnModuleInit, OnModuleDestroy {
     const normalizedFromTg = this.normalizePhone(phoneFromTelegram);
     const normalizedExpected = pending.phone;
 
+    console.log('normalizedFromTg', normalizedFromTg);
+    console.log('normalizedExpected', normalizedExpected);
+
     // Проверяем что номер совпадает с тем, что вводил пользователь на сайте
     if (normalizedFromTg !== normalizedExpected) {
       await this.bot.telegram.sendMessage(

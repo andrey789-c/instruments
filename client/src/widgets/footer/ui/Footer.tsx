@@ -1,4 +1,16 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { authApi } from "@/src/shared/api";
+
 export const Footer = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticated(authApi.isAuthenticated());
+  }, []);
+
   return (
     <footer className="bg-[#F8F7F4] border-t border-[#0D0F14]/08 py-8 px-4 sm:px-8 lg:px-16">
       <div className="max-w-7xl mx-auto">
@@ -29,10 +41,11 @@ export const Footer = () => {
             </span>
           </div>
 
-          {/* Кнопка */}
-          <button className="bg-[#FF6B35] hover:bg-[#ff7a46] transition-colors border-none text-white text-sm font-semibold px-5 py-2.5 rounded-xl cursor-pointer shadow-[0_8px_24px_rgba(255,107,53,0.25)]">
-            Зарегистрироваться
-          </button>
+          {!isAuthenticated && (
+            <Link href="/auth/register" className="bg-[#FF6B35] hover:bg-[#ff7a46] transition-colors border-none text-white text-sm font-semibold px-5 py-2.5 rounded-xl cursor-pointer shadow-[0_8px_24px_rgba(255,107,53,0.25)]">
+              Зарегистрироваться
+            </Link>
+          )}
         </div>
       </div>
     </footer>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { authApi, tablesApi, usersApi } from '@/src/shared/api';
+import { authApi, tablesApi } from '@/src/shared/api';
 import type { User } from '@/src/shared/api/authApi';
 import type { Table } from '@/src/shared/api/tablesApi';
 import {
@@ -19,20 +19,21 @@ export function DashboardPage() {
   const [error, setError]     = useState('');
 
   // Create table modal
-  const [showCreate, setShowCreate]   = useState(false);
+  const [showCreate, setShowCreate]     = useState(false);
   const [newTableName, setNewTableName] = useState('');
-  const [creating, setCreating]       = useState(false);
+  const [creating, setCreating]         = useState(false);
 
   // Delete confirmation
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleting, setDeleting]     = useState(false);
 
   // Rename
-  const [renamingId, setRenamingId]     = useState<string | null>(null);
-  const [renameValue, setRenameValue]   = useState('');
-  const [renaming, setRenaming]         = useState(false);
+  const [renamingId, setRenamingId]   = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [renaming, setRenaming]       = useState(false);
 
   const canEdit = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN';
+  const isSuperadmin = user?.role === 'SUPERADMIN';
 
   const load = useCallback(async () => {
     try {
@@ -116,6 +117,16 @@ export function DashboardPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Team link — only for superadmin */}
+            {isSuperadmin && (
+              <button
+                onClick={() => router.push('/team')}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg text-[#0D0F14]/55 hover:text-[#0D0F14] hover:bg-[#0D0F14]/05 transition-all text-sm font-medium"
+              >
+                <Users size={15} />
+                Участники
+              </button>
+            )}
             <div className="hidden sm:flex flex-col items-end">
               <span className="text-sm font-semibold text-[#0D0F14] leading-none">{user?.organizationName}</span>
               <span className="text-xs text-[#0D0F14]/40 mt-0.5">{user?.email}</span>
@@ -140,21 +151,58 @@ export function DashboardPage() {
         {/* ── Stats ──────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {[
-            { icon: Layers, label: 'Таблицы', value: String(tables.length), color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-200' },
-            { icon: TrendingUp, label: 'Общая стоимость', value: `${totalValue.toLocaleString('ru')} ₽`, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200' },
-            { icon: Users, label: 'Роль', value: user?.role ?? '', color: 'text-[#FF6B35]', bg: 'bg-[#FF6B35]/10', border: 'border-[#FF6B35]/20' },
+            {
+              icon: Layers, label: 'Таблицы', value: String(tables.length),
+              color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-200',
+            },
+            {
+              icon: TrendingUp, label: 'Общая стоимость', value: `${totalValue.toLocaleString('ru')} ₽`,
+              color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-200',
+            },
+            {
+              icon: Users, label: 'Роль', value: user?.role ?? '',
+              color: 'text-[#FF6B35]', bg: 'bg-[#FF6B35]/10', border: 'border-[#FF6B35]/20',
+              // Clicking on role stat goes to team page for superadmin
+              onClick: isSuperadmin ? () => router.push('/team') : undefined,
+            },
           ].map((s, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-[#0D0F14]/08 p-5 flex items-center gap-4 shadow-sm">
+            <div
+              key={i}
+              onClick={s.onClick}
+              className={`bg-white rounded-2xl border border-[#0D0F14]/08 p-5 flex items-center gap-4 shadow-sm ${
+                s.onClick ? 'cursor-pointer hover:border-[#FF6B35]/30 hover:shadow-[0_4px_16px_rgba(255,107,53,0.1)] transition-all' : ''
+              }`}
+            >
               <div className={`w-11 h-11 rounded-xl ${s.bg} border ${s.border} flex items-center justify-center shrink-0`}>
                 <s.icon size={20} className={s.color} />
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="text-xs font-medium text-[#0D0F14]/40 mb-0.5">{s.label}</div>
-                <div className="text-lg font-bold text-[#0D0F14]">{s.value}</div>
+                <div className="text-lg font-bold text-[#0D0F14] truncate">{s.value}</div>
               </div>
+              {s.onClick && <ChevronRight size={15} className="text-[#0D0F14]/25 shrink-0" />}
             </div>
           ))}
         </div>
+
+        {/* ── Team banner (superadmin only) ──────────────────────── */}
+        {isSuperadmin && (
+          <button
+            onClick={() => router.push('/team')}
+            className="w-full mb-6 flex items-center justify-between gap-4 px-5 py-4 bg-white rounded-2xl border border-[#0D0F14]/08 hover:border-[#FF6B35]/30 hover:shadow-[0_4px_16px_rgba(255,107,53,0.1)] transition-all text-left shadow-sm group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF6B35]/15 to-[#FF6B35]/05 border border-[#FF6B35]/20 flex items-center justify-center">
+                <Users size={18} className="text-[#FF6B35]" />
+              </div>
+              <div>
+                <div className="font-semibold text-[#0D0F14] text-sm">Управление участниками</div>
+                <div className="text-xs text-[#0D0F14]/40">Добавляйте сотрудников и настраивайте их роли</div>
+              </div>
+            </div>
+            <ChevronRight size={16} className="text-[#0D0F14]/25 group-hover:text-[#FF6B35] transition-colors shrink-0" />
+          </button>
+        )}
 
         {/* ── Tables header ──────────────────────────────────────── */}
         <div className="flex items-center justify-between mb-5">
@@ -248,10 +296,12 @@ export function DashboardPage() {
                         autoFocus
                         className="flex-1 px-2 py-1 text-sm border border-[#FF6B35] rounded-lg outline-none text-[#0D0F14] min-w-0"
                       />
-                      <button onClick={handleRename} disabled={renaming} className="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 transition-colors shrink-0">
+                      <button onClick={handleRename} disabled={renaming}
+                        className="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 transition-colors shrink-0">
                         {renaming ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
                       </button>
-                      <button onClick={() => setRenamingId(null)} className="w-7 h-7 rounded-lg bg-[#0D0F14]/08 text-[#0D0F14]/60 flex items-center justify-center hover:bg-[#0D0F14]/15 transition-colors shrink-0">
+                      <button onClick={() => setRenamingId(null)}
+                        className="w-7 h-7 rounded-lg bg-[#0D0F14]/08 text-[#0D0F14]/60 flex items-center justify-center hover:bg-[#0D0F14]/15 transition-colors shrink-0">
                         <X size={12} />
                       </button>
                     </div>

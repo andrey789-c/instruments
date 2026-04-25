@@ -3,32 +3,46 @@ import {
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
-} from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { AuthService } from "../auth/auth.service";
-import { CreateUserDto } from "src/auth/dto/create-user.dto";
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../prisma/prisma.service';
+import { AuthService } from '../auth/auth.service';
+import { CreateUserDto } from 'src/auth/dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService, private auth: AuthService) {}
 
   async createUser(dto: CreateUserDto) {
-    const role = dto.role ?? "USER";
-
-    // Если создают USER или ADMIN — только SUPERADMIN может
+    const role = dto.role ?? 'USER';
 
     if (!dto.organizationName) {
-      throw new UnprocessableEntityException(
-        "Введите название Вашей организации",
-      );
+      throw new UnprocessableEntityException('Введите название Вашей организации');
     }
-    if (!dto.phone || dto.phone.replace(/\D/g, "").length < 10) {
-      throw new UnprocessableEntityException(
-        "Введите корректный номер телефона",
-      );
+    if (!dto.phone || dto.phone.replace(/\D/g, '').length < 10) {
+      throw new UnprocessableEntityException('Введите корректный номер телефона');
     }
-    // ownerId stays null
     return this.auth.createUser({ ...dto, role, ownerId: undefined });
+  }
+
+  /**
+   * Superadmin создаёт участника в своей организации.
+   * Участник получает ownerId = actor.id и роль USER или ADMIN.
+   */
+  async createMember(
+    dto: { email: string; password: string; phone: string; role?: string },
+    actor: any,
+  ) {
+    if (!actor || actor.role !== 'SUPERADMIN') throw new ForbiddenException();
+
+    return this.auth.createUser({
+      email: dto.email,
+      password: dto.password,
+      phone: dto.phone,
+      role: (dto.role as any) ?? 'USER',
+      organizationName: actor.organizationName,
+      ownerId: actor.id,
+    });
   }
 
   async findById(id: string) {
@@ -36,8 +50,7 @@ export class UsersService {
   }
 
   async listForActor(actor: any) {
-    if (actor.role === "SUPERADMIN") {
-      // superadmin видит только своих (owned) пользователей и себя
+    if (actor.role === 'SUPERADMIN') {
       return this.prisma.user.findMany({
         where: { OR: [{ ownerId: actor.id }, { id: actor.id }] },
         select: {
@@ -45,38 +58,73 @@ export class UsersService {
           email: true,
           role: true,
           ownerId: true,
+          phone: true,
+          phoneVerified: true,
           createdAt: true,
         },
+        orderBy: { createdAt: 'asc' },
       });
     }
-    // обычный пользователь видит только себя
     return [await this.findById(actor.id)];
   }
 
   async changeRole(targetUserId: string, newRole: string, actor: any) {
-    // only superadmin can change roles
-    if (!actor || actor.role !== "SUPERADMIN") throw new ForbiddenException();
+    if (!actor || actor.role !== 'SUPERADMIN') throw new ForbiddenException();
 
-    // убедимся, что target принадлежит этому superadmin (если target не superadmin)
-    const target = await this.prisma.user.findUnique({
-      where: { id: targetUserId },
-    });
-    if (!target) throw new NotFoundException("User not found");
+    const target = await this.prisma.user.findUnique({ where: { id: targetUserId } });
+    if (!target) throw new NotFoundException('User not found');
 
-    // если target.ownerId !== actor.id и target.role !== SUPERADMIN -> запрет
-    if (target.ownerId !== actor.id && target.role !== "SUPERADMIN") {
-      throw new ForbiddenException("You can only manage users you own.");
+    if (target.ownerId !== actor.id && target.id !== actor.id) {
+      throw new ForbiddenException('You can only manage users you own.');
     }
 
-    // нельзя сделать кого-то супер-админом без проверки (мы позволяем только superadmin делать это)
-    // в общем, мы уже проверили actor.role === SUPERADMIN
     return this.prisma.user.update({
       where: { id: targetUserId },
       data: {
         role: newRole as any,
-        ownerId: newRole === "SUPERADMIN" ? null : target.ownerId ?? actor.id,
+        ownerId: newRole === 'SUPERADMIN' ? null : target.ownerId ?? actor.id,
       },
       select: { id: true, email: true, role: true, ownerId: true },
     });
+  }
+
+  async deleteMember(targetUserId: string, actor: any) {
+    if (!actor || actor.role !== 'SUPERADMIN') throw new ForbiddenException();
+
+    const target = await this.prisma.user.findUnique({ where: { id: targetUserId } });
+    if (!target) throw new NotFoundException('User not found');
+
+    // Нельзя удалить самого себя
+    if (target.id === actor.id) {
+      throw new ForbiddenException('Нельзя удалить собственный аккаунт');
+    }
+
+    // Можно удалить только своих участников
+    if (target.ownerId !== actor.id) {
+      throw new ForbiddenException('You can only delete users you own.');
+    }
+
+    await this.prisma.user.delete({ where: { id: targetUserId } });
+    return { success: true };
+  }
+
+  async changePassword(targetUserId: string, newPassword: string, actor: any) {
+    if (!actor || actor.role !== 'SUPERADMIN') throw new ForbiddenException();
+
+    const target = await this.prisma.user.findUnique({ where: { id: targetUserId } });
+    if (!target) throw new NotFoundException('User not found');
+
+    if (target.ownerId !== actor.id && target.id !== actor.id) {
+      throw new ForbiddenException('You can only manage users you own.');
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id: targetUserId },
+      data: { password: hashed },
+    });
+
+    return { success: true };
   }
 }

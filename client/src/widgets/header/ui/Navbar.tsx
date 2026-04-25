@@ -2,12 +2,18 @@
 
 import { Menu, Package, X } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { authApi } from "@/src/shared/api";
 
 const NAV = ["Возможности", "Тарифы", "FAQ"];
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticated(authApi.isAuthenticated());
+  }, []);
 
   return (
     <nav className="relative z-10 flex items-center justify-between px-4 sm:px-8 lg:px-16 py-4 sm:py-5">
@@ -32,14 +38,16 @@ export function Navbar() {
         ))}
       </div>
 
-      <div className="hidden md:flex items-center gap-3">
-        <Link href={'/auth/login'} className="bg-transparent border-none text-[#0D0F14]/55 text-sm cursor-pointer px-4 py-2 rounded-lg hover:bg-[#0D0F14]/[0.06] hover:text-[#0D0F14] transition-all">
-          Войти
-        </Link>
-        <button className="bg-[#FF6B35] hover:bg-[#ff7a46] transition-colors border-none text-white text-sm font-semibold px-5 py-2.5 rounded-xl cursor-pointer shadow-[0_8px_24px_rgba(255,107,53,0.25)]">
-          Начать бесплатно
-        </button>
-      </div>
+      {!isAuthenticated && (
+        <div className="hidden md:flex items-center gap-3">
+          <Link href={'/auth/login'} className="bg-transparent border-none text-[#0D0F14]/55 text-sm cursor-pointer px-4 py-2 rounded-lg hover:bg-[#0D0F14]/[0.06] hover:text-[#0D0F14] transition-all">
+            Войти
+          </Link>
+          <Link href={'/auth/register'} className="bg-[#FF6B35] hover:bg-[#ff7a46] transition-colors border-none text-white text-sm font-semibold px-5 py-2.5 rounded-xl cursor-pointer shadow-[0_8px_24px_rgba(255,107,53,0.25)]">
+            Начать бесплатно
+          </Link>
+        </div>
+      )}
 
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -60,14 +68,16 @@ export function Navbar() {
                 {item}
               </a>
             ))}
-            <div className="flex flex-col gap-2 pt-4 border-t border-[#0D0F14]/08 mt-2">
-              <Link href={'/auth/login'} className="text-[#0D0F14]/55 hover:text-[#0D0F14] hover:bg-[#0D0F14]/[0.06] w-full justify-start py-2 px-4 rounded-lg bg-transparent border-none cursor-pointer text-left">
-                Войти
-              </Link>
-              <button className="bg-[#FF6B35] hover:bg-[#ff7a46] text-white font-semibold w-full py-2 px-4 rounded-lg border-none cursor-pointer">
-                Начать бесплатно
-              </button>
-            </div>
+            {!isAuthenticated && (
+              <div className="flex flex-col gap-2 pt-4 border-t border-[#0D0F14]/08 mt-2">
+                <Link href={'/auth/login'} className="text-[#0D0F14]/55 hover:text-[#0D0F14] hover:bg-[#0D0F14]/[0.06] w-full justify-start py-2 px-4 rounded-lg bg-transparent border-none cursor-pointer text-left">
+                  Войти
+                </Link>
+                <Link href={'/auth/register'} className="bg-[#FF6B35] hover:bg-[#ff7a46] text-white font-semibold w-full py-2 px-4 rounded-lg border-none cursor-pointer">
+                  Начать бесплатно
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

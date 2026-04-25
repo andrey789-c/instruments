@@ -58,7 +58,7 @@ export function usePhoneVerification(): UsePhoneVerificationReturn {
     // Polling статуса
     pollRef.current = setInterval(async () => {
       try {
-        const { verified } = await authApi.getPhoneVerificationStatus(phone);
+        const { verified } = await authApi.checkPhoneStatus(phone);
         if (verified) {
           clearTimers();
           setState('verified');

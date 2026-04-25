@@ -1,6 +1,9 @@
-import { ArrowRight, Play, TrendingUp, Users } from "lucide-react";
+"use client";
 
-import { Counter } from "@/src/shared/ui";
+import { ArrowRight, Play } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { authApi } from "@/src/shared/api";
 import { Navbar } from "@/src/widgets/header/ui";
 import { TablePreview } from "./TablePreview";
 
@@ -12,6 +15,17 @@ const AVATARS = [
 ];
 
 export function HeroSection() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticated(authApi.isAuthenticated());
+  }, []);
+
+  const primaryHref = isAuthenticated ? "/dashboard" : "/auth/register";
+  const secondaryHref = isAuthenticated ? "/dashboard" : "/auth/login";
+  const primaryLabel = isAuthenticated ? "Перейти в dashboard" : "Начать бесплатно";
+  const secondaryLabel = isAuthenticated ? "Открыть dashboard" : "Посмотреть демо";
+
   return (
     <div className="relative min-h-screen bg-[#F8F7F4] overflow-hidden flex flex-col" style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
 
@@ -47,16 +61,16 @@ export function HeroSection() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-5 w-full sm:w-auto">
-              <button className="flex items-center gap-2 bg-[#FF6B35] hover:bg-[#ff7a46] transition-colors border-none text-white font-bold text-sm sm:text-[15px] px-6 sm:px-7 py-5 sm:py-6 rounded-2xl cursor-pointer shadow-[0_12px_32px_rgba(255,107,53,0.28)] w-full sm:w-auto justify-center">
-                Начать бесплатно <ArrowRight size={16} />
-              </button>
+              <Link href={primaryHref} className="flex items-center gap-2 bg-[#FF6B35] hover:bg-[#ff7a46] transition-colors border-none text-white font-bold text-sm sm:text-[15px] px-6 sm:px-7 py-5 sm:py-6 rounded-2xl cursor-pointer shadow-[0_12px_32px_rgba(255,107,53,0.28)] w-full sm:w-auto justify-center">
+                {primaryLabel} <ArrowRight size={16} />
+              </Link>
 
-              <button className="flex items-center gap-3 bg-transparent border-none text-[#0D0F14]/50 text-sm cursor-pointer hover:text-[#0D0F14]/80 transition-colors">
+              <Link href={secondaryHref} className="flex items-center gap-3 bg-transparent border-none text-[#0D0F14]/50 text-sm cursor-pointer hover:text-[#0D0F14]/80 transition-colors">
                 <span className="w-10 h-10 rounded-full border border-[#0D0F14]/20 flex items-center justify-center">
                   <Play size={13} className="text-[#0D0F14]/50 fill-[#0D0F14]/50" />
                 </span>
-                Посмотреть демо
-              </button>
+                {secondaryLabel}
+              </Link>
             </div>
 
             {/* Social proof */}
@@ -70,7 +84,7 @@ export function HeroSection() {
                 ))}
               </div>
               <p className="text-[13px] text-[#0D0F14]/45 m-0">
-                <span className="text-[#0D0F14] font-semibold">+2 400</span> владельцев бизнеса уже используют
+                Подходит для складов, магазинов и небольших команд
               </p>
             </div>
           </div>
@@ -78,19 +92,6 @@ export function HeroSection() {
           {/* RIGHT (desktop only) */}
           <div className="hidden lg:flex flex-1 w-full max-w-[670px] justify-center relative">
             <TablePreview />
-
-            {/* desktop stat badges */}
-            <div className="hidden xl:flex absolute -left-20 top-1/3 bg-white border border-[#0D0F14]/08 rounded-2xl px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.08)] flex-col gap-1">
-              <TrendingUp size={16} className="text-emerald-500" />
-              <span className="text-[#0D0F14] font-bold text-lg leading-none"><Counter end={1284} /></span>
-              <span className="text-[#0D0F14]/40 text-[11px]">изменений сегодня</span>
-            </div>
-
-            <div className="hidden xl:flex absolute right-10 bottom-12 bg-white border border-[#0D0F14]/08 rounded-2xl px-4 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.08)] flex-col gap-1">
-              <Users size={16} className="text-[#FF6B35]" />
-              <span className="text-[#0D0F14] font-bold text-lg leading-none"><Counter end={3} suffix=" роли" /></span>
-              <span className="text-[#0D0F14]/40 text-[11px]">для вашей команды</span>
-            </div>
           </div>
         </div>
 
@@ -99,20 +100,6 @@ export function HeroSection() {
           <TablePreview />
         </div>
 
-        {/* Mobile stat badges */}
-        <div className="flex lg:hidden gap-3 sm:gap-4 justify-center w-full max-w-[400px]">
-          <div className="flex bg-white border border-[#0D0F14]/10 rounded-xl sm:rounded-2xl px-4 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.07)] flex-col gap-1.5 sm:gap-1 items-center flex-1">
-            <TrendingUp size={16} className="text-emerald-500" />
-            <span className="text-[#0D0F14] font-bold text-lg leading-none"><Counter end={1284} /></span>
-            <span className="text-[#0D0F14]/45 text-[11px] text-center">изменений сегодня</span>
-          </div>
-
-          <div className="flex bg-white border border-[#0D0F14]/10 rounded-xl sm:rounded-2xl px-4 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.07)] flex-col gap-1.5 sm:gap-1 items-center flex-1">
-            <Users size={16} className="text-[#FF6B35]" />
-            <span className="text-[#0D0F14] font-bold text-lg leading-none"><Counter end={3} suffix=" роли" /></span>
-            <span className="text-[#0D0F14]/45 text-[11px] text-center">для вашей команды</span>
-          </div>
-        </div>
       </div>
 
       {/* bottom fade */}

@@ -38,17 +38,14 @@ export function TableDetailPage({ tableId }: Props) {
   const [sortField, setSortField] = useState<'name' | 'price' | null>(null);
   const [sortDir, setSortDir]     = useState<'asc' | 'desc'>('asc');
 
-  // Inline editing
   const [editingCell, setEditingCell] = useState<EditingCell | null>(null);
   const [editValue, setEditValue]     = useState('');
   const [saving, setSaving]           = useState(false);
 
-  // Add row
   const [showAddRow, setShowAddRow] = useState(false);
   const [newRow, setNewRow]         = useState({ name: '', description: '', price: '' });
   const [addingRow, setAddingRow]   = useState(false);
 
-  // Delete row
   const [deletingRowId, setDeletingRowId] = useState<string | null>(null);
 
   const editInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
@@ -78,7 +75,6 @@ export function TableDetailPage({ tableId }: Props) {
     }
   }, [editingCell]);
 
-  // ── Sorting & filtering ─────────────────────────────────────
   const filteredItems = (table?.items ?? [])
     .filter(item =>
       item.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -102,7 +98,6 @@ export function TableDetailPage({ tableId }: Props) {
     }
   };
 
-  // ── Inline edit ─────────────────────────────────────────────
   const startEdit = (item: Item, field: 'name' | 'description' | 'price') => {
     if (!canEdit) return;
     setEditingCell({ itemId: item.id, field });
@@ -144,7 +139,6 @@ export function TableDetailPage({ tableId }: Props) {
     if (e.key === 'Escape') cancelEdit();
   };
 
-  // ── Add row ─────────────────────────────────────────────────
   const handleAddRow = async () => {
     if (!newRow.name.trim() || !newRow.description.trim()) return;
     const price = parseFloat(newRow.price);
@@ -164,7 +158,6 @@ export function TableDetailPage({ tableId }: Props) {
     }
   };
 
-  // ── Delete row ──────────────────────────────────────────────
   const handleDeleteRow = async (id: string) => {
     setDeletingRowId(id);
     try {
@@ -179,7 +172,6 @@ export function TableDetailPage({ tableId }: Props) {
     }
   };
 
-  // ── Export CSV ──────────────────────────────────────────────
   const exportCsv = () => {
     if (!table) return;
     const rows = [['Название', 'Описание', 'Цена (₽)'], ...table.items.map(i => [i.name, i.description, String(i.price)])];
@@ -191,7 +183,6 @@ export function TableDetailPage({ tableId }: Props) {
     a.click();
   };
 
-  // ── Render ───────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8F7F4] flex items-center justify-center">
@@ -210,7 +201,6 @@ export function TableDetailPage({ tableId }: Props) {
   return (
     <div className="min-h-screen bg-[#F8F7F4]" style={{ fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
 
-      {/* ── Header ─────────────────────────────────────────────── */}
       <header className="bg-white border-b border-[#0D0F14]/08 sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
@@ -258,7 +248,6 @@ export function TableDetailPage({ tableId }: Props) {
           <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 mb-5">{error}</div>
         )}
 
-        {/* ── Search bar ─────────────────────────────────────────── */}
         <div className="flex items-center gap-3 mb-5">
           <div className="relative flex-1 max-w-sm">
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#0D0F14]/30" />
@@ -275,10 +264,8 @@ export function TableDetailPage({ tableId }: Props) {
           </span>
         </div>
 
-        {/* ── Table ──────────────────────────────────────────────── */}
         <div className="bg-white rounded-2xl border border-[#0D0F14]/08 shadow-sm overflow-hidden">
 
-          {/* Table header */}
           <div className="grid gap-px bg-[#F8F7F4] border-b border-[#0D0F14]/08" style={{ gridTemplateColumns: canEdit ? '2fr 3fr 1fr 44px' : '2fr 3fr 1fr' }}>
             <div
               className="px-4 py-3 flex items-center gap-1.5 cursor-pointer hover:text-[#FF6B35] transition-colors text-xs font-semibold text-[#0D0F14]/50 uppercase tracking-widest"
@@ -298,7 +285,6 @@ export function TableDetailPage({ tableId }: Props) {
             {canEdit && <div className="px-2 py-3" />}
           </div>
 
-          {/* Rows */}
           {filteredItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-[#0D0F14]/30 text-sm">
@@ -351,7 +337,6 @@ export function TableDetailPage({ tableId }: Props) {
                   )}
                 </div>
 
-                {/* Description */}
                 <div
                   className={`px-4 py-3.5 flex items-center ${canEdit ? 'cursor-text' : ''}`}
                   onClick={() => startEdit(item, 'description')}
@@ -378,7 +363,6 @@ export function TableDetailPage({ tableId }: Props) {
                   )}
                 </div>
 
-                {/* Price */}
                 <div
                   className={`px-4 py-3.5 flex items-center ${canEdit ? 'cursor-text' : ''}`}
                   onClick={() => startEdit(item, 'price')}
@@ -409,7 +393,6 @@ export function TableDetailPage({ tableId }: Props) {
                   )}
                 </div>
 
-                {/* Delete button */}
                 {canEdit && (
                   <div className="flex items-center justify-center">
                     <button
@@ -427,7 +410,6 @@ export function TableDetailPage({ tableId }: Props) {
             ))
           )}
 
-          {/* Footer: total */}
           {filteredItems.length > 0 && (
             <div
               className="grid border-t border-[#0D0F14]/10 bg-[#F8F7F4]"
@@ -445,7 +427,6 @@ export function TableDetailPage({ tableId }: Props) {
         </div>
       </main>
 
-      {/* ── Add row modal ──────────────────────────────────────── */}
       {showAddRow && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md border border-[#0D0F14]/08">

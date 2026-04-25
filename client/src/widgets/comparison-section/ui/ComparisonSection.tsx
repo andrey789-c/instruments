@@ -1,8 +1,22 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { authApi } from "@/src/shared/api";
 import { ComparisonRow } from "@/src/shared/ui";
 import { COMPARISON_ROWS } from "../config/comparisons";
 
 export function ComparisonSection() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticated(authApi.isAuthenticated());
+  }, []);
+
+  const ctaHref = isAuthenticated ? "/dashboard" : "/auth/register";
+  const ctaLabel = isAuthenticated ? "Перейти в dashboard" : "Начать бесплатно";
+
   return (
     <section
       className="relative bg-[#F8F7F4] overflow-hidden py-24 px-4 sm:px-8 lg:px-16"
@@ -62,15 +76,14 @@ export function ComparisonSection() {
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 mb-10">
-          <button className="flex items-center gap-2 bg-[#FF6B35] hover:bg-[#ff7a46] transition-colors border-none text-white font-bold text-sm sm:text-[15px] px-6 sm:px-7 py-5 sm:py-6 rounded-2xl cursor-pointer shadow-[0_12px_32px_rgba(255,107,53,0.28)] w-full sm:w-auto justify-center">
-            Начать бесплатно <ArrowRight size={16} />
-          </button>
+          <Link href={ctaHref} className="flex items-center gap-2 bg-[#FF6B35] hover:bg-[#ff7a46] transition-colors border-none text-white font-bold text-sm sm:text-[15px] px-6 sm:px-7 py-5 sm:py-6 rounded-2xl cursor-pointer shadow-[0_12px_32px_rgba(255,107,53,0.28)] w-full sm:w-auto justify-center">
+            {ctaLabel} <ArrowRight size={16} />
+          </Link>
         </div>
 
         {/* Footnote */}
         <p className="text-center text-[13px] text-[#0D0F14]/35 mt-6 m-0">
-          <span className="text-[#0D0F14]/60 font-semibold">+2 400</span>{" "}
-          команд перешли к нам из Bitrix и AmoCRM за последний год
+          Если устали от перегруженных CRM — попробуйте простой формат работы в таблице
         </p>
       </div>
 

@@ -1,6 +1,22 @@
+"use client";
+
 import { ArrowRight, Check, Clock, Headphones } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { authApi } from "@/src/shared/api";
 
 export const FinalCta = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsAuthenticated(authApi.isAuthenticated());
+  }, []);
+
+  const primaryHref = isAuthenticated ? "/dashboard" : "/auth/register";
+  const secondaryHref = isAuthenticated ? "/dashboard" : "/auth/login";
+  const primaryLabel = isAuthenticated ? "Перейти в dashboard" : "Начать бесплатно";
+  const secondaryLabel = isAuthenticated ? "Открыть dashboard" : "Посмотреть демо";
+
   return (
     <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-8 lg:px-16 bg-gradient-to-br from-[#FF6B35] via-[#ff7a46] to-[#ff8557] overflow-hidden">
       {/* Декоративный glow */}
@@ -46,13 +62,13 @@ export const FinalCta = () => {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8 sm:mb-10">
-            <button className="inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-4 sm:py-5 bg-white text-[#FF6B35] rounded-2xl text-base sm:text-lg font-bold cursor-pointer transition-all hover:-translate-y-1 hover:shadow-2xl shadow-lg">
-              Начать бесплатно
+            <Link href={primaryHref} className="inline-flex items-center justify-center gap-2 px-7 sm:px-8 py-4 sm:py-5 bg-white text-[#FF6B35] rounded-2xl text-base sm:text-lg font-bold cursor-pointer transition-all hover:-translate-y-1 hover:shadow-2xl shadow-lg">
+              {primaryLabel}
               <ArrowRight size={18} />
-            </button>
-            <button className="px-7 sm:px-8 py-4 sm:py-5 bg-white/10 backdrop-blur-sm text-white border-2 border-white/40 rounded-2xl text-base sm:text-lg font-semibold cursor-pointer transition-all hover:-translate-y-1 hover:bg-white/20">
-              Посмотреть демо
-            </button>
+            </Link>
+            <Link href={secondaryHref} className="px-7 sm:px-8 py-4 sm:py-5 bg-white/10 backdrop-blur-sm text-white border-2 border-white/40 rounded-2xl text-base sm:text-lg font-semibold cursor-pointer transition-all hover:-translate-y-1 hover:bg-white/20">
+              {secondaryLabel}
+            </Link>
           </div>
 
           {/* Social proof */}
@@ -61,10 +77,10 @@ export const FinalCta = () => {
               <div className="w-8 h-8 rounded-full bg-violet-500 border-2 border-white flex items-center justify-center text-xs font-bold">АЛ</div>
               <div className="w-8 h-8 rounded-full bg-sky-500 border-2 border-white flex items-center justify-center text-xs font-bold">МК</div>
               <div className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-xs font-bold">НС</div>
-              <div className="w-8 h-8 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center text-xs font-bold">+2K</div>
+              <div className="w-8 h-8 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center text-xs font-bold">OK</div>
             </div>
             <p className="font-semibold">
-              Присоединяйтесь к 2,400+ владельцам бизнеса
+              Запустите учёт под свои процессы
             </p>
           </div>
         </div>
