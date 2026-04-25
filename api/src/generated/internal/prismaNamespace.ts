@@ -394,7 +394,8 @@ export const ModelName = {
   PasswordResetToken: 'PasswordResetToken',
   PhoneVerification: 'PhoneVerification',
   InventoryTable: 'InventoryTable',
-  InventoryItem: 'InventoryItem'
+  InventoryItem: 'InventoryItem',
+  InventoryTableHistory: 'InventoryTableHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -410,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "passwordResetToken" | "phoneVerification" | "inventoryTable" | "inventoryItem"
+    modelProps: "user" | "passwordResetToken" | "phoneVerification" | "inventoryTable" | "inventoryItem" | "inventoryTableHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -784,6 +785,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InventoryTableHistory: {
+      payload: Prisma.$InventoryTableHistoryPayload<ExtArgs>
+      fields: Prisma.InventoryTableHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InventoryTableHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InventoryTableHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.InventoryTableHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InventoryTableHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.InventoryTableHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.InventoryTableHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.InventoryTableHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InventoryTableHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.InventoryTableHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload>
+        }
+        update: {
+          args: Prisma.InventoryTableHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.InventoryTableHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InventoryTableHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InventoryTableHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.InventoryTableHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InventoryTableHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.InventoryTableHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInventoryTableHistory>
+        }
+        groupBy: {
+          args: Prisma.InventoryTableHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InventoryTableHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InventoryTableHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InventoryTableHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -829,6 +904,8 @@ export const UserScalarFieldEnum = {
   password: 'password',
   role: 'role',
   organizationName: 'organizationName',
+  firstName: 'firstName',
+  lastName: 'lastName',
   ownerId: 'ownerId',
   telegramId: 'telegramId',
   phone: 'phone',
@@ -890,12 +967,31 @@ export const InventoryItemScalarFieldEnum = {
 export type InventoryItemScalarFieldEnum = (typeof InventoryItemScalarFieldEnum)[keyof typeof InventoryItemScalarFieldEnum]
 
 
+export const InventoryTableHistoryScalarFieldEnum = {
+  id: 'id',
+  tableId: 'tableId',
+  snapshot: 'snapshot',
+  userId: 'userId',
+  userName: 'userName',
+  createdAt: 'createdAt'
+} as const
+
+export type InventoryTableHistoryScalarFieldEnum = (typeof InventoryTableHistoryScalarFieldEnum)[keyof typeof InventoryTableHistoryScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -912,6 +1008,15 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -994,6 +1099,20 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 /**
@@ -1088,6 +1207,7 @@ export type GlobalOmitConfig = {
   phoneVerification?: Prisma.PhoneVerificationOmit
   inventoryTable?: Prisma.InventoryTableOmit
   inventoryItem?: Prisma.InventoryItemOmit
+  inventoryTableHistory?: Prisma.InventoryTableHistoryOmit
 }
 
 /* Types for Logging */

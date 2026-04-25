@@ -184,6 +184,7 @@ export type InventoryTableWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"InventoryTable"> | Date | string
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.InventoryItemListRelationFilter
+  history?: Prisma.InventoryTableHistoryListRelationFilter
 }
 
 export type InventoryTableOrderByWithRelationInput = {
@@ -194,6 +195,7 @@ export type InventoryTableOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   owner?: Prisma.UserOrderByWithRelationInput
   items?: Prisma.InventoryItemOrderByRelationAggregateInput
+  history?: Prisma.InventoryTableHistoryOrderByRelationAggregateInput
 }
 
 export type InventoryTableWhereUniqueInput = Prisma.AtLeast<{
@@ -207,6 +209,7 @@ export type InventoryTableWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"InventoryTable"> | Date | string
   owner?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   items?: Prisma.InventoryItemListRelationFilter
+  history?: Prisma.InventoryTableHistoryListRelationFilter
 }, "id">
 
 export type InventoryTableOrderByWithAggregationInput = {
@@ -238,6 +241,7 @@ export type InventoryTableCreateInput = {
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutInventoryTableInput
   items?: Prisma.InventoryItemCreateNestedManyWithoutTableInput
+  history?: Prisma.InventoryTableHistoryCreateNestedManyWithoutTableInput
 }
 
 export type InventoryTableUncheckedCreateInput = {
@@ -247,6 +251,7 @@ export type InventoryTableUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutTableInput
+  history?: Prisma.InventoryTableHistoryUncheckedCreateNestedManyWithoutTableInput
 }
 
 export type InventoryTableUpdateInput = {
@@ -256,6 +261,7 @@ export type InventoryTableUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutInventoryTableNestedInput
   items?: Prisma.InventoryItemUpdateManyWithoutTableNestedInput
+  history?: Prisma.InventoryTableHistoryUpdateManyWithoutTableNestedInput
 }
 
 export type InventoryTableUncheckedUpdateInput = {
@@ -265,6 +271,7 @@ export type InventoryTableUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InventoryItemUncheckedUpdateManyWithoutTableNestedInput
+  history?: Prisma.InventoryTableHistoryUncheckedUpdateManyWithoutTableNestedInput
 }
 
 export type InventoryTableCreateManyInput = {
@@ -385,12 +392,27 @@ export type InventoryTableUpdateOneRequiredWithoutItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.InventoryTableUpdateToOneWithWhereWithoutItemsInput, Prisma.InventoryTableUpdateWithoutItemsInput>, Prisma.InventoryTableUncheckedUpdateWithoutItemsInput>
 }
 
+export type InventoryTableCreateNestedOneWithoutHistoryInput = {
+  create?: Prisma.XOR<Prisma.InventoryTableCreateWithoutHistoryInput, Prisma.InventoryTableUncheckedCreateWithoutHistoryInput>
+  connectOrCreate?: Prisma.InventoryTableCreateOrConnectWithoutHistoryInput
+  connect?: Prisma.InventoryTableWhereUniqueInput
+}
+
+export type InventoryTableUpdateOneRequiredWithoutHistoryNestedInput = {
+  create?: Prisma.XOR<Prisma.InventoryTableCreateWithoutHistoryInput, Prisma.InventoryTableUncheckedCreateWithoutHistoryInput>
+  connectOrCreate?: Prisma.InventoryTableCreateOrConnectWithoutHistoryInput
+  upsert?: Prisma.InventoryTableUpsertWithoutHistoryInput
+  connect?: Prisma.InventoryTableWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InventoryTableUpdateToOneWithWhereWithoutHistoryInput, Prisma.InventoryTableUpdateWithoutHistoryInput>, Prisma.InventoryTableUncheckedUpdateWithoutHistoryInput>
+}
+
 export type InventoryTableCreateWithoutOwnerInput = {
   id?: string
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.InventoryItemCreateNestedManyWithoutTableInput
+  history?: Prisma.InventoryTableHistoryCreateNestedManyWithoutTableInput
 }
 
 export type InventoryTableUncheckedCreateWithoutOwnerInput = {
@@ -399,6 +421,7 @@ export type InventoryTableUncheckedCreateWithoutOwnerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   items?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutTableInput
+  history?: Prisma.InventoryTableHistoryUncheckedCreateNestedManyWithoutTableInput
 }
 
 export type InventoryTableCreateOrConnectWithoutOwnerInput = {
@@ -444,6 +467,7 @@ export type InventoryTableCreateWithoutItemsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.UserCreateNestedOneWithoutInventoryTableInput
+  history?: Prisma.InventoryTableHistoryCreateNestedManyWithoutTableInput
 }
 
 export type InventoryTableUncheckedCreateWithoutItemsInput = {
@@ -452,6 +476,7 @@ export type InventoryTableUncheckedCreateWithoutItemsInput = {
   ownerId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  history?: Prisma.InventoryTableHistoryUncheckedCreateNestedManyWithoutTableInput
 }
 
 export type InventoryTableCreateOrConnectWithoutItemsInput = {
@@ -476,6 +501,7 @@ export type InventoryTableUpdateWithoutItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.UserUpdateOneRequiredWithoutInventoryTableNestedInput
+  history?: Prisma.InventoryTableHistoryUpdateManyWithoutTableNestedInput
 }
 
 export type InventoryTableUncheckedUpdateWithoutItemsInput = {
@@ -484,6 +510,59 @@ export type InventoryTableUncheckedUpdateWithoutItemsInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  history?: Prisma.InventoryTableHistoryUncheckedUpdateManyWithoutTableNestedInput
+}
+
+export type InventoryTableCreateWithoutHistoryInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner: Prisma.UserCreateNestedOneWithoutInventoryTableInput
+  items?: Prisma.InventoryItemCreateNestedManyWithoutTableInput
+}
+
+export type InventoryTableUncheckedCreateWithoutHistoryInput = {
+  id?: string
+  name: string
+  ownerId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  items?: Prisma.InventoryItemUncheckedCreateNestedManyWithoutTableInput
+}
+
+export type InventoryTableCreateOrConnectWithoutHistoryInput = {
+  where: Prisma.InventoryTableWhereUniqueInput
+  create: Prisma.XOR<Prisma.InventoryTableCreateWithoutHistoryInput, Prisma.InventoryTableUncheckedCreateWithoutHistoryInput>
+}
+
+export type InventoryTableUpsertWithoutHistoryInput = {
+  update: Prisma.XOR<Prisma.InventoryTableUpdateWithoutHistoryInput, Prisma.InventoryTableUncheckedUpdateWithoutHistoryInput>
+  create: Prisma.XOR<Prisma.InventoryTableCreateWithoutHistoryInput, Prisma.InventoryTableUncheckedCreateWithoutHistoryInput>
+  where?: Prisma.InventoryTableWhereInput
+}
+
+export type InventoryTableUpdateToOneWithWhereWithoutHistoryInput = {
+  where?: Prisma.InventoryTableWhereInput
+  data: Prisma.XOR<Prisma.InventoryTableUpdateWithoutHistoryInput, Prisma.InventoryTableUncheckedUpdateWithoutHistoryInput>
+}
+
+export type InventoryTableUpdateWithoutHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.UserUpdateOneRequiredWithoutInventoryTableNestedInput
+  items?: Prisma.InventoryItemUpdateManyWithoutTableNestedInput
+}
+
+export type InventoryTableUncheckedUpdateWithoutHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.InventoryItemUncheckedUpdateManyWithoutTableNestedInput
 }
 
 export type InventoryTableCreateManyOwnerInput = {
@@ -499,6 +578,7 @@ export type InventoryTableUpdateWithoutOwnerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InventoryItemUpdateManyWithoutTableNestedInput
+  history?: Prisma.InventoryTableHistoryUpdateManyWithoutTableNestedInput
 }
 
 export type InventoryTableUncheckedUpdateWithoutOwnerInput = {
@@ -507,6 +587,7 @@ export type InventoryTableUncheckedUpdateWithoutOwnerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.InventoryItemUncheckedUpdateManyWithoutTableNestedInput
+  history?: Prisma.InventoryTableHistoryUncheckedUpdateManyWithoutTableNestedInput
 }
 
 export type InventoryTableUncheckedUpdateManyWithoutOwnerInput = {
@@ -523,10 +604,12 @@ export type InventoryTableUncheckedUpdateManyWithoutOwnerInput = {
 
 export type InventoryTableCountOutputType = {
   items: number
+  history: number
 }
 
 export type InventoryTableCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | InventoryTableCountOutputTypeCountItemsArgs
+  history?: boolean | InventoryTableCountOutputTypeCountHistoryArgs
 }
 
 /**
@@ -546,6 +629,13 @@ export type InventoryTableCountOutputTypeCountItemsArgs<ExtArgs extends runtime.
   where?: Prisma.InventoryItemWhereInput
 }
 
+/**
+ * InventoryTableCountOutputType without action
+ */
+export type InventoryTableCountOutputTypeCountHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InventoryTableHistoryWhereInput
+}
+
 
 export type InventoryTableSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -555,6 +645,7 @@ export type InventoryTableSelect<ExtArgs extends runtime.Types.Extensions.Intern
   updatedAt?: boolean
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.InventoryTable$itemsArgs<ExtArgs>
+  history?: boolean | Prisma.InventoryTable$historyArgs<ExtArgs>
   _count?: boolean | Prisma.InventoryTableCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["inventoryTable"]>
 
@@ -588,6 +679,7 @@ export type InventoryTableOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type InventoryTableInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   items?: boolean | Prisma.InventoryTable$itemsArgs<ExtArgs>
+  history?: boolean | Prisma.InventoryTable$historyArgs<ExtArgs>
   _count?: boolean | Prisma.InventoryTableCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InventoryTableIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -602,6 +694,7 @@ export type $InventoryTablePayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     owner: Prisma.$UserPayload<ExtArgs>
     items: Prisma.$InventoryItemPayload<ExtArgs>[]
+    history: Prisma.$InventoryTableHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1005,6 +1098,7 @@ export interface Prisma__InventoryTableClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   owner<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.InventoryTable$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InventoryTable$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  history<T extends Prisma.InventoryTable$historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InventoryTable$historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryTableHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1456,6 +1550,30 @@ export type InventoryTable$itemsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.InventoryItemScalarFieldEnum | Prisma.InventoryItemScalarFieldEnum[]
+}
+
+/**
+ * InventoryTable.history
+ */
+export type InventoryTable$historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InventoryTableHistory
+   */
+  select?: Prisma.InventoryTableHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InventoryTableHistory
+   */
+  omit?: Prisma.InventoryTableHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InventoryTableHistoryInclude<ExtArgs> | null
+  where?: Prisma.InventoryTableHistoryWhereInput
+  orderBy?: Prisma.InventoryTableHistoryOrderByWithRelationInput | Prisma.InventoryTableHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.InventoryTableHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InventoryTableHistoryScalarFieldEnum | Prisma.InventoryTableHistoryScalarFieldEnum[]
 }
 
 /**

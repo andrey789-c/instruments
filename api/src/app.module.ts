@@ -7,6 +7,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { UsersModule } from "./users/users.module";
 import { JwtModule } from "@nestjs/jwt";
 import { TableModule } from './table/table.module';
+import { HistoryModule } from './history/history.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TableModule } from './table/table.module';
     PrismaModule,
     UsersModule,
     TableModule,
+    HistoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

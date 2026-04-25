@@ -176,8 +176,6 @@ function AddItemModal({ tableId, onClose, onAdded }: AddModalProps) {
   );
 }
 
-// ─── main page ────────────────────────────────────────────────────────────────
-
 export function TableDetailPage({ tableId }: { tableId: string }) {
   const router = useRouter();
   const [table,   setTable]   = useState<Table & { items?: Item[] } | null>(null);

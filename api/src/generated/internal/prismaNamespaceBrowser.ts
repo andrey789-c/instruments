@@ -53,7 +53,8 @@ export const ModelName = {
   PasswordResetToken: 'PasswordResetToken',
   PhoneVerification: 'PhoneVerification',
   InventoryTable: 'InventoryTable',
-  InventoryItem: 'InventoryItem'
+  InventoryItem: 'InventoryItem',
+  InventoryTableHistory: 'InventoryTableHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -78,6 +79,8 @@ export const UserScalarFieldEnum = {
   password: 'password',
   role: 'role',
   organizationName: 'organizationName',
+  firstName: 'firstName',
+  lastName: 'lastName',
   ownerId: 'ownerId',
   telegramId: 'telegramId',
   phone: 'phone',
@@ -139,12 +142,31 @@ export const InventoryItemScalarFieldEnum = {
 export type InventoryItemScalarFieldEnum = (typeof InventoryItemScalarFieldEnum)[keyof typeof InventoryItemScalarFieldEnum]
 
 
+export const InventoryTableHistoryScalarFieldEnum = {
+  id: 'id',
+  tableId: 'tableId',
+  snapshot: 'snapshot',
+  userId: 'userId',
+  userName: 'userName',
+  createdAt: 'createdAt'
+} as const
+
+export type InventoryTableHistoryScalarFieldEnum = (typeof InventoryTableHistoryScalarFieldEnum)[keyof typeof InventoryTableHistoryScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -161,4 +183,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

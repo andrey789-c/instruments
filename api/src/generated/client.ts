@@ -67,3 +67,8 @@ export type InventoryTable = Prisma.InventoryTableModel
  * 
  */
 export type InventoryItem = Prisma.InventoryItemModel
+/**
+ * Model InventoryTableHistory
+ * 
+ */
+export type InventoryTableHistory = Prisma.InventoryTableHistoryModel

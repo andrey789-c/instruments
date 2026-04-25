@@ -14,12 +14,17 @@ enum Role {
   SUPERADMIN
 }
 
+
 model User {
   id               String  @id @default(uuid())
   email            String  @unique
   password         String
   role             Role    @default(USER)
   organizationName String
+
+  firstName String?
+  lastName  String?
+
   ownerId          String?
   telegramId       String?
 
@@ -60,7 +65,8 @@ model InventoryTable {
   ownerId String
   owner   User   @relation("owner", fields: [ownerId], references: [id], onDelete: Cascade)
 
-  items InventoryItem[]
+  items   InventoryItem[]
+  history InventoryTableHistory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -78,4 +84,17 @@ model InventoryItem {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model InventoryTableHistory {
+  id        String   @id @default(uuid())
+  tableId   String
+  snapshot  Json
+
+  userId    String?
+  userName  String? // "Иван Петров"
+
+  createdAt DateTime @default(now())
+
+  table InventoryTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
 }
