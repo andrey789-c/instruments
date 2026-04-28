@@ -20,7 +20,7 @@ export function FeaturesSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-[1200px] mx-auto">
+      <div id="possibilities" className="relative z-10 max-w-[1200px] mx-auto">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-14 sm:mb-16 lg:mb-20 gap-4">
           <span className="w-fit bg-[#FF6B35]/10 text-[#FF6B35] border border-[#FF6B35]/30 rounded-full px-3.5 py-1 text-[11px] sm:text-xs font-semibold">

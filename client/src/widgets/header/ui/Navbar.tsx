@@ -5,7 +5,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { authApi } from "@/src/shared/api";
 
-const NAV = ["Возможности", "Тарифы", "FAQ"];
+const NAV = [
+  {label: 'Возможности', value: '#possibilities'},
+  {label: 'Тарифы', value: '#price'},
+  {label: 'FAQ', value: '#faq'}
+]
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,11 +33,11 @@ export function Navbar() {
       <div className="hidden md:flex items-center gap-8">
         {NAV.map((item) => (
           <a
-            key={item}
-            href="#"
+            key={item.value}
+            href={item.value}
             className="text-[#0D0F14]/45 text-sm hover:text-[#0D0F14]/75 transition-colors"
           >
-            {item}
+            {item.label}
           </a>
         ))}
       </div>
@@ -61,11 +65,11 @@ export function Navbar() {
           <div className="flex flex-col gap-1 p-4">
             {NAV.map((item) => (
               <a
-                key={item}
-                href="#"
+                key={item.value}
+                href={item.value}
                 className="text-[#0D0F14]/45 hover:text-[#0D0F14]/75 transition-colors py-3 px-4 rounded-lg hover:bg-[#0D0F14]/[0.05]"
               >
-                {item}
+                {item.label}
               </a>
             ))}
             {!isAuthenticated && (
