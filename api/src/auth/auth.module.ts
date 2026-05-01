@@ -20,7 +20,8 @@ import { TelegramModule } from 'src/telegram/telegram.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_ACCESS_SECRET'),
-        signOptions: { expiresIn: '60m' },
+        // expiresIn задаётся при login() в AuthService — совпадает с maxAge куки
+        signOptions: {},
       }),
       inject: [ConfigService],
     }),

@@ -248,6 +248,8 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenListRelationFilter
   InventoryTable?: Prisma.InventoryTableListRelationFilter
+  subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
+  pendingPayments?: Prisma.PendingPaymentListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -266,6 +268,8 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   PasswordResetToken?: Prisma.PasswordResetTokenOrderByRelationAggregateInput
   InventoryTable?: Prisma.InventoryTableOrderByRelationAggregateInput
+  subscription?: Prisma.SubscriptionOrderByWithRelationInput
+  pendingPayments?: Prisma.PendingPaymentOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -287,6 +291,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenListRelationFilter
   InventoryTable?: Prisma.InventoryTableListRelationFilter
+  subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
+  pendingPayments?: Prisma.PendingPaymentListRelationFilter
 }, "id" | "email" | "phone">
 
 export type UserOrderByWithAggregationInput = {
@@ -343,6 +349,8 @@ export type UserCreateInput = {
   updatedAt?: Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
   InventoryTable?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  pendingPayments?: Prisma.PendingPaymentCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -361,6 +369,8 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
   InventoryTable?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  pendingPayments?: Prisma.PendingPaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -379,6 +389,8 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
   InventoryTable?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  pendingPayments?: Prisma.PendingPaymentUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -397,6 +409,8 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
   InventoryTable?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  pendingPayments?: Prisma.PendingPaymentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -548,6 +562,34 @@ export type UserUpdateOneRequiredWithoutInventoryTableNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInventoryTableInput, Prisma.UserUpdateWithoutInventoryTableInput>, Prisma.UserUncheckedUpdateWithoutInventoryTableInput>
 }
 
+export type UserCreateNestedOneWithoutSubscriptionInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionInput, Prisma.UserUncheckedCreateWithoutSubscriptionInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubscriptionInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSubscriptionNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionInput, Prisma.UserUncheckedCreateWithoutSubscriptionInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubscriptionInput
+  upsert?: Prisma.UserUpsertWithoutSubscriptionInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSubscriptionInput, Prisma.UserUpdateWithoutSubscriptionInput>, Prisma.UserUncheckedUpdateWithoutSubscriptionInput>
+}
+
+export type UserCreateNestedOneWithoutPendingPaymentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPendingPaymentsInput, Prisma.UserUncheckedCreateWithoutPendingPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPendingPaymentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPendingPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPendingPaymentsInput, Prisma.UserUncheckedCreateWithoutPendingPaymentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPendingPaymentsInput
+  upsert?: Prisma.UserUpsertWithoutPendingPaymentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPendingPaymentsInput, Prisma.UserUpdateWithoutPendingPaymentsInput>, Prisma.UserUncheckedUpdateWithoutPendingPaymentsInput>
+}
+
 export type UserCreateWithoutPasswordResetTokenInput = {
   id?: string
   email: string
@@ -563,6 +605,8 @@ export type UserCreateWithoutPasswordResetTokenInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   InventoryTable?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  pendingPayments?: Prisma.PendingPaymentCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPasswordResetTokenInput = {
@@ -580,6 +624,8 @@ export type UserUncheckedCreateWithoutPasswordResetTokenInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   InventoryTable?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  pendingPayments?: Prisma.PendingPaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPasswordResetTokenInput = {
@@ -613,6 +659,8 @@ export type UserUpdateWithoutPasswordResetTokenInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   InventoryTable?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  pendingPayments?: Prisma.PendingPaymentUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPasswordResetTokenInput = {
@@ -630,6 +678,8 @@ export type UserUncheckedUpdateWithoutPasswordResetTokenInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   InventoryTable?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  pendingPayments?: Prisma.PendingPaymentUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInventoryTableInput = {
@@ -647,6 +697,8 @@ export type UserCreateWithoutInventoryTableInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  pendingPayments?: Prisma.PendingPaymentCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInventoryTableInput = {
@@ -664,6 +716,8 @@ export type UserUncheckedCreateWithoutInventoryTableInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  pendingPayments?: Prisma.PendingPaymentUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInventoryTableInput = {
@@ -697,6 +751,8 @@ export type UserUpdateWithoutInventoryTableInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  pendingPayments?: Prisma.PendingPaymentUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInventoryTableInput = {
@@ -714,6 +770,192 @@ export type UserUncheckedUpdateWithoutInventoryTableInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   PasswordResetToken?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  pendingPayments?: Prisma.PendingPaymentUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSubscriptionInput = {
+  id?: string
+  email: string
+  password: string
+  role?: $Enums.Role
+  organizationName: string
+  firstName?: string | null
+  lastName?: string | null
+  ownerId?: string | null
+  telegramId?: string | null
+  phone?: string | null
+  phoneVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  PasswordResetToken?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  InventoryTable?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
+  pendingPayments?: Prisma.PendingPaymentCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSubscriptionInput = {
+  id?: string
+  email: string
+  password: string
+  role?: $Enums.Role
+  organizationName: string
+  firstName?: string | null
+  lastName?: string | null
+  ownerId?: string | null
+  telegramId?: string | null
+  phone?: string | null
+  phoneVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  PasswordResetToken?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  InventoryTable?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
+  pendingPayments?: Prisma.PendingPaymentUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSubscriptionInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionInput, Prisma.UserUncheckedCreateWithoutSubscriptionInput>
+}
+
+export type UserUpsertWithoutSubscriptionInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSubscriptionInput, Prisma.UserUncheckedUpdateWithoutSubscriptionInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionInput, Prisma.UserUncheckedCreateWithoutSubscriptionInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSubscriptionInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSubscriptionInput, Prisma.UserUncheckedUpdateWithoutSubscriptionInput>
+}
+
+export type UserUpdateWithoutSubscriptionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  PasswordResetToken?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  InventoryTable?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
+  pendingPayments?: Prisma.PendingPaymentUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSubscriptionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  PasswordResetToken?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  InventoryTable?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
+  pendingPayments?: Prisma.PendingPaymentUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPendingPaymentsInput = {
+  id?: string
+  email: string
+  password: string
+  role?: $Enums.Role
+  organizationName: string
+  firstName?: string | null
+  lastName?: string | null
+  ownerId?: string | null
+  telegramId?: string | null
+  phone?: string | null
+  phoneVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  PasswordResetToken?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput
+  InventoryTable?: Prisma.InventoryTableCreateNestedManyWithoutOwnerInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPendingPaymentsInput = {
+  id?: string
+  email: string
+  password: string
+  role?: $Enums.Role
+  organizationName: string
+  firstName?: string | null
+  lastName?: string | null
+  ownerId?: string | null
+  telegramId?: string | null
+  phone?: string | null
+  phoneVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  PasswordResetToken?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+  InventoryTable?: Prisma.InventoryTableUncheckedCreateNestedManyWithoutOwnerInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPendingPaymentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPendingPaymentsInput, Prisma.UserUncheckedCreateWithoutPendingPaymentsInput>
+}
+
+export type UserUpsertWithoutPendingPaymentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPendingPaymentsInput, Prisma.UserUncheckedUpdateWithoutPendingPaymentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPendingPaymentsInput, Prisma.UserUncheckedCreateWithoutPendingPaymentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPendingPaymentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPendingPaymentsInput, Prisma.UserUncheckedUpdateWithoutPendingPaymentsInput>
+}
+
+export type UserUpdateWithoutPendingPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  PasswordResetToken?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput
+  InventoryTable?: Prisma.InventoryTableUpdateManyWithoutOwnerNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPendingPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  organizationName?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  telegramId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  PasswordResetToken?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+  InventoryTable?: Prisma.InventoryTableUncheckedUpdateManyWithoutOwnerNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
 }
 
 
@@ -724,11 +966,13 @@ export type UserUncheckedUpdateWithoutInventoryTableInput = {
 export type UserCountOutputType = {
   PasswordResetToken: number
   InventoryTable: number
+  pendingPayments: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   PasswordResetToken?: boolean | UserCountOutputTypeCountPasswordResetTokenArgs
   InventoryTable?: boolean | UserCountOutputTypeCountInventoryTableArgs
+  pendingPayments?: boolean | UserCountOutputTypeCountPendingPaymentsArgs
 }
 
 /**
@@ -755,6 +999,13 @@ export type UserCountOutputTypeCountInventoryTableArgs<ExtArgs extends runtime.T
   where?: Prisma.InventoryTableWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPendingPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PendingPaymentWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -772,6 +1023,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   updatedAt?: boolean
   PasswordResetToken?: boolean | Prisma.User$PasswordResetTokenArgs<ExtArgs>
   InventoryTable?: boolean | Prisma.User$InventoryTableArgs<ExtArgs>
+  subscription?: boolean | Prisma.User$subscriptionArgs<ExtArgs>
+  pendingPayments?: boolean | Prisma.User$pendingPaymentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -827,6 +1080,8 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   PasswordResetToken?: boolean | Prisma.User$PasswordResetTokenArgs<ExtArgs>
   InventoryTable?: boolean | Prisma.User$InventoryTableArgs<ExtArgs>
+  subscription?: boolean | Prisma.User$subscriptionArgs<ExtArgs>
+  pendingPayments?: boolean | Prisma.User$pendingPaymentsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -837,6 +1092,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     PasswordResetToken: Prisma.$PasswordResetTokenPayload<ExtArgs>[]
     InventoryTable: Prisma.$InventoryTablePayload<ExtArgs>[]
+    subscription: Prisma.$SubscriptionPayload<ExtArgs> | null
+    pendingPayments: Prisma.$PendingPaymentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1248,6 +1505,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   PasswordResetToken<T extends Prisma.User$PasswordResetTokenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$PasswordResetTokenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasswordResetTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   InventoryTable<T extends Prisma.User$InventoryTableArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$InventoryTableArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InventoryTablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  subscription<T extends Prisma.User$subscriptionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$subscriptionArgs<ExtArgs>>): Prisma.Prisma__SubscriptionClient<runtime.Types.Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pendingPayments<T extends Prisma.User$pendingPaymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pendingPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PendingPaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1723,6 +1982,49 @@ export type User$InventoryTableArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.InventoryTableScalarFieldEnum | Prisma.InventoryTableScalarFieldEnum[]
+}
+
+/**
+ * User.subscription
+ */
+export type User$subscriptionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Subscription
+   */
+  select?: Prisma.SubscriptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Subscription
+   */
+  omit?: Prisma.SubscriptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubscriptionInclude<ExtArgs> | null
+  where?: Prisma.SubscriptionWhereInput
+}
+
+/**
+ * User.pendingPayments
+ */
+export type User$pendingPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PendingPayment
+   */
+  select?: Prisma.PendingPaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PendingPayment
+   */
+  omit?: Prisma.PendingPaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PendingPaymentInclude<ExtArgs> | null
+  where?: Prisma.PendingPaymentWhereInput
+  orderBy?: Prisma.PendingPaymentOrderByWithRelationInput | Prisma.PendingPaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PendingPaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PendingPaymentScalarFieldEnum | Prisma.PendingPaymentScalarFieldEnum[]
 }
 
 /**

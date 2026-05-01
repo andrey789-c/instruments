@@ -12,15 +12,7 @@ import {
   AlertCircle, Eye, EyeOff, Package, ArrowRight, CheckCircle, Building2,
 } from 'lucide-react';
 
-interface RegisterFormData {
-  organizationName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  phone: string;
-}
 
-// Шаги регистрации
 type RegStep = 'form' | 'verify-phone' | 'done';
 
 export const Register = () => {
@@ -50,13 +42,6 @@ export const Register = () => {
     password: {
       required: true,
       minLength: 6,
-      custom: (v: string) => {
-        if (v.length < 6) return 'Минимум 6 символов';
-        if (!/[A-Z]/.test(v)) return 'Нужна заглавная буква';
-        if (!/[a-z]/.test(v)) return 'Нужна строчная буква';
-        if (!/[0-9]/.test(v)) return 'Нужна цифра';
-        return null;
-      },
     },
     confirmPassword: {
       required: true,
@@ -77,7 +62,6 @@ export const Register = () => {
     setApiError('');
   };
 
-  // ── Шаг 1: Валидация → создаём аккаунт → идём к верификации телефона
   const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError('');
@@ -105,19 +89,6 @@ export const Register = () => {
     setTimeout(() => router.push('/auth/login?registered=true'), 1800);
   };
 
-  // ── Password strength helper
-  const getPasswordStrength = () => {
-    const p = formData.password;
-    if (!p) return null;
-    const checks = {
-      length: p.length >= 6,
-      upper: /[A-Z]/.test(p),
-      lower: /[a-z]/.test(p),
-      number: /[0-9]/.test(p),
-    };
-    return { checks, strength: Object.values(checks).filter(Boolean).length };
-  };
-  const ps = getPasswordStrength();
 
   if (step === 'verify-phone') {
     return (
@@ -249,7 +220,7 @@ export const Register = () => {
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-                  {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
+                  {/* {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
                   {formData.password && ps && (
                     <div className="mt-2 p-3 bg-[#F8F7F4] rounded-lg space-y-2">
                       <div className="flex gap-1">
@@ -268,7 +239,7 @@ export const Register = () => {
                         ))}
                       </div>
                     </div>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Confirm Password */}

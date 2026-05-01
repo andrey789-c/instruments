@@ -47,7 +47,6 @@ async function handleResponse<T>(res: Response): Promise<T> {
         phone = data.phone;
       }
 
-      // NestJS validation errors — массив объектов {field, errors}
       if (Array.isArray(data.message)) {
         const first = data.message[0];
         if (typeof first === 'string') message = first;

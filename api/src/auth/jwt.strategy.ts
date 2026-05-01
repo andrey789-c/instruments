@@ -9,13 +9,10 @@ import { Request } from "express";
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private config: ConfigService, private prisma: PrismaService) {
     super({
-      // Извлекаем токен из cookies или из Authorization header
       jwtFromRequest: ExtractJwt.fromExtractors([
-        // 1. Сначала пробуем cookie
         (request: Request) => {
           return request?.cookies?.["auth_token"];
         },
-        // 2. Если нет в cookie, пробуем Authorization header
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       secretOrKey: config.get<string>("JWT_ACCESS_SECRET", {

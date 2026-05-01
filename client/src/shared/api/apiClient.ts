@@ -1,4 +1,5 @@
 import { cookies } from '../lib/cookies';
+import { AUTH_SESSION_MAX_AGE_MS } from '../config/authSession';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
@@ -15,7 +16,9 @@ export interface RequestConfig extends RequestInit {
 class ApiClient {
   private readonly baseURL: string;
   private readonly tokenKey = 'auth_token';
-  private readonly tokenExpireDays = 7; // Токен истекает через 7 дней
+  private readonly tokenExpireDays = 7;
+  /** Секунды — как maxAge куки при обычной сессии на API */
+  private readonly sessionMaxAgeSec = AUTH_SESSION_MAX_AGE_MS / 1000;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
@@ -39,7 +42,6 @@ class ApiClient {
   }
 
   isAuthenticated(): boolean {
-    console.log(cookies.has(this.tokenKey))
     return cookies.has(this.tokenKey);
   }
 

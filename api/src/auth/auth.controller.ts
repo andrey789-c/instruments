@@ -22,11 +22,10 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { TelegramBotService } from 'src/telegram/telegram-bot.service';
-
-// 30 дней — для "Запомнить меня"
-const REMEMBER_ME_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
-// 24 часа — обычная сессия
-const SESSION_MAX_AGE = 24 * 60 * 60 * 1000;
+import {
+  AUTH_REMEMBER_MAX_AGE_MS,
+  AUTH_SESSION_MAX_AGE_MS,
+} from './auth-session.constants';
 
 @Controller('auth')
 export class AuthController {
@@ -51,16 +50,15 @@ export class AuthController {
       });
     }
 
-    const { access_token } = await this.auth.login(user);
+    const { access_token } = await this.auth.login(user, body.rememberMe);
 
-    const maxAge = body.rememberMe ? REMEMBER_ME_MAX_AGE : SESSION_MAX_AGE;
+    const maxAge = body.rememberMe ? AUTH_REMEMBER_MAX_AGE_MS : AUTH_SESSION_MAX_AGE_MS;
 
     res.cookie('auth_token', access_token, {
       httpOnly: false,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      // Если rememberMe — долгая кука, иначе — сессионная (браузер удалит при закрытии)
-      ...(body.rememberMe ? { maxAge } : {}),
+      maxAge,
       path: '/',
     });
 

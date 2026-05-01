@@ -6,30 +6,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { IsEmail, IsString, MinLength, IsOptional, IsIn, Matches } from 'class-validator';
-
-class CreateMemberDto {
-  @IsEmail({}, { message: 'Некорректный email' })
-  email: string;
-
-  @IsString()
-  @MinLength(6, { message: 'Минимум 6 символов' })
-  password: string;
-
-  @IsString()
-  @Matches(/^\+?[0-9]{10,15}$/, { message: 'Некорректный номер телефона' })
-  phone: string;
-
-  @IsOptional()
-  @IsIn(['USER', 'ADMIN'], { message: 'Роль может быть USER или ADMIN' })
-  role?: 'USER' | 'ADMIN';
-}
-
-class UpdatePasswordDto {
-  @IsString()
-  @MinLength(6, { message: 'Минимум 6 символов' })
-  password: string;
-}
+import { CreateMemberDto } from './dto/create-member.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)

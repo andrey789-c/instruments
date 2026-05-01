@@ -25,10 +25,6 @@ export class UsersService {
     return this.auth.createUser({ ...dto, role, ownerId: undefined });
   }
 
-  /**
-   * Superadmin создаёт участника в своей организации.
-   * Участник получает ownerId = actor.id и роль USER или ADMIN.
-   */
   async createMember(
     dto: { email: string; password: string; phone: string; role?: string },
     actor: any,
@@ -94,12 +90,10 @@ export class UsersService {
     const target = await this.prisma.user.findUnique({ where: { id: targetUserId } });
     if (!target) throw new NotFoundException('User not found');
 
-    // Нельзя удалить самого себя
     if (target.id === actor.id) {
       throw new ForbiddenException('Нельзя удалить собственный аккаунт');
     }
 
-    // Можно удалить только своих участников
     if (target.ownerId !== actor.id) {
       throw new ForbiddenException('You can only delete users you own.');
     }

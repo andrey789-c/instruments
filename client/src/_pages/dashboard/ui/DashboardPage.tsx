@@ -5,49 +5,92 @@ import { useRouter } from 'next/navigation';
 import { authApi, tablesApi } from '@/src/shared/api';
 import type { User } from '@/src/shared/api/authApi';
 import type { Table } from '@/src/shared/api/tablesApi';
+import { SubscriptionModal } from '@/src/features/subscription';
 import {
   Package, Plus, LogOut, ChevronRight, Loader2,
-  Layers, TrendingUp, Users, Trash2, Edit3, Check, X,
+  Layers, TrendingUp, Users, Trash2, Edit3, Check, X, Crown,
 } from 'lucide-react';
+import { subscriptionApi, type SubscriptionStatus } from '@/src/shared/api/subscriptionApi';
 
 interface TableWithItems {
   items?: { price: number }[];
 }
 
+function SubscriptionBadge({
+  status,
+  onClick,
+}: {
+  status: SubscriptionStatus | null;
+  onClick: () => void;
+}) {
+  if (!status) return null;
+
+  if (status.active) {
+    return (
+      <button
+        onClick={onClick}
+        title={`PRO активна до ${status.expiresAt ? new Date(status.expiresAt).toLocaleDateString('ru') : '—'}`}
+        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full transition-all hover:scale-105"
+        style={{
+          background: 'linear-gradient(135deg, #FF6B35 0%, #ff4500 100%)',
+          boxShadow: '0 2px 8px rgba(255,107,53,0.35)',
+        }}
+      >
+        <Crown size={11} className="text-white" fill="white" />
+        <span className="text-[11px] font-black text-white uppercase tracking-wide">PRO</span>
+      </button>
+    );
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-all hover:scale-105 hover:border-[#FF6B35]/50 group"
+      style={{ borderColor: 'rgba(13,15,20,0.15)', background: 'transparent' }}
+    >
+      <Crown size={11} className="text-[#0D0F14]/30 group-hover:text-[#FF6B35] transition-colors" />
+      <span className="text-[11px] font-semibold text-[#0D0F14]/40 group-hover:text-[#FF6B35] uppercase tracking-wide transition-colors">
+        FREE
+      </span>
+    </button>
+  );
+}
+
 export function DashboardPage() {
   const router = useRouter();
 
-  const [user, setUser]       = useState<User | null>(null);
-  const [tables, setTables]   = useState<Table[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const [user, setUser]                         = useState<User | null>(null);
+  const [tables, setTables]                     = useState<Table[]>([]);
+  const [loading, setLoading]                   = useState(true);
+  const [error, setError]                       = useState('');
+  const [subscription, setSubscription]         = useState<SubscriptionStatus | null>(null);
+  const [showSubModal, setShowSubModal]         = useState(false);
 
   // Create table modal
-  const [showCreate, setShowCreate]     = useState(false);
-  const [newTableName, setNewTableName] = useState('');
-  const [creating, setCreating]         = useState(false);
+  const [showCreate, setShowCreate]             = useState(false);
+  const [newTableName, setNewTableName]         = useState('');
+  const [creating, setCreating]                 = useState(false);
 
   // Delete confirmation
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [deleting, setDeleting]     = useState(false);
+  const [deletingId, setDeletingId]             = useState<string | null>(null);
+  const [deleting, setDeleting]                 = useState(false);
 
   // Rename
-  const [renamingId, setRenamingId]   = useState<string | null>(null);
-  const [renameValue, setRenameValue] = useState('');
-  const [renaming, setRenaming]       = useState(false);
+  const [renamingId, setRenamingId]             = useState<string | null>(null);
+  const [renameValue, setRenameValue]           = useState('');
+  const [renaming, setRenaming]                 = useState(false);
 
-  const canEdit = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN';
+  const canEdit      = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN';
   const isSuperadmin = user?.role === 'SUPERADMIN';
 
   const load = useCallback(async () => {
     try {
-      const [me, all] = await Promise.all([
+      const [me, all, sub] = await Promise.all([
         authApi.getCurrentUser(),
         tablesApi.getAll(),
+        subscriptionApi.getStatus().catch(() => null),
       ]);
 
-      // Keep dashboard totals in sync with table detail page:
-      // derive sum from actual items when backend returns them.
       const enriched = await Promise.all(
         all.map(async (table) => {
           try {
@@ -62,6 +105,7 @@ export function DashboardPage() {
 
       setUser(me);
       setTables(enriched);
+      setSubscription(sub);
     } catch {
       setError('Не удалось загрузить данные');
     } finally {
@@ -71,6 +115,15 @@ export function DashboardPage() {
 
   useEffect(() => { load(); }, [load]);
 
+  // Auto-show subscription modal if no subscription on first load
+  useEffect(() => {
+    if (subscription && !subscription.active) {
+      // Небольшая задержка, чтобы дашборд успел отрисоваться
+      const t = setTimeout(() => setShowSubModal(true), 800);
+      return () => clearTimeout(t);
+    }
+  }, [subscription]);
+
   const handleLogout = async () => {
     await authApi.logout();
     router.push('/auth/login');
@@ -78,6 +131,8 @@ export function DashboardPage() {
 
   const handleCreate = async () => {
     if (!newTableName.trim()) return;
+    // Блокируем создание таблиц без подписки (опционально)
+    // if (!subscription?.active) { setShowSubModal(true); return; }
     setCreating(true);
     try {
       const t = await tablesApi.create({ name: newTableName.trim() });
@@ -146,10 +201,22 @@ export function DashboardPage() {
                 Участники
               </button>
             )}
+
+            {/* User info + subscription badge */}
             <div className="hidden sm:flex flex-col items-end">
-              <span className="text-sm font-semibold text-[#0D0F14] leading-none">{user?.organizationName}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-[#0D0F14] leading-none">{user?.organizationName}</span>
+                {/* ── Subscription badge ── */}
+                <SubscriptionBadge status={subscription} onClick={() => setShowSubModal(true)} />
+              </div>
               <span className="text-xs text-[#0D0F14]/40 mt-0.5">{user?.email}</span>
             </div>
+
+            {/* Mobile: subscription badge only */}
+            <div className="flex sm:hidden">
+              <SubscriptionBadge status={subscription} onClick={() => setShowSubModal(true)} />
+            </div>
+
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FF6B35]/10 rounded-full">
               <div className="w-1.5 h-1.5 rounded-full bg-[#FF6B35]" />
               <span className="text-[11px] font-semibold text-[#FF6B35] uppercase tracking-wide">{user?.role}</span>
@@ -167,6 +234,38 @@ export function DashboardPage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
+        {/* ── Subscription upgrade banner (if FREE) ─────────────── */}
+        {subscription && !subscription.active && (
+          <button
+            onClick={() => setShowSubModal(true)}
+            className="w-full mb-6 flex items-center justify-between gap-4 px-5 py-4 rounded-2xl text-left transition-all group"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,107,53,0.08) 0%, rgba(255,69,0,0.04) 100%)',
+              border: '1px dashed rgba(255,107,53,0.35)',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: 'rgba(255,107,53,0.12)', border: '1px solid rgba(255,107,53,0.2)' }}>
+                <Crown size={18} className="text-[#FF6B35]" />
+              </div>
+              <div>
+                <div className="font-semibold text-[#0D0F14] text-sm">Перейдите на PRO</div>
+                <div className="text-xs text-[#0D0F14]/40">Безлимитные таблицы, команда до 20 чел. и API-доступ</div>
+              </div>
+            </div>
+            <span
+              className="shrink-0 px-4 py-1.5 rounded-xl text-xs font-bold text-white transition-all group-hover:-translate-y-0.5"
+              style={{
+                background: 'linear-gradient(135deg, #FF6B35 0%, #ff4500 100%)',
+                boxShadow: '0 4px 12px rgba(255,107,53,0.3)',
+              }}
+            >
+              990+ ₽/мес
+            </span>
+          </button>
+        )}
+
         {/* ── Stats ──────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {[
@@ -181,7 +280,6 @@ export function DashboardPage() {
             {
               icon: Users, label: 'Роль', value: user?.role ?? '',
               color: 'text-[#FF6B35]', bg: 'bg-[#FF6B35]/10', border: 'border-[#FF6B35]/20',
-              // Clicking on role stat goes to team page for superadmin
               onClick: isSuperadmin ? () => router.push('/team') : undefined,
             },
           ].map((s, i) => (
@@ -290,7 +388,6 @@ export function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {tables.map(table => (
               <div key={table.id} className="group bg-white rounded-2xl border border-[#0D0F14]/08 hover:border-[#FF6B35]/30 hover:shadow-[0_8px_32px_rgba(255,107,53,0.12)] transition-all duration-200 overflow-hidden">
-
                 <div
                   className="p-5 cursor-pointer"
                   onClick={() => {
@@ -384,6 +481,10 @@ export function DashboardPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {showSubModal && (
+        <SubscriptionModal onClose={() => setShowSubModal(false)} />
       )}
     </div>
   );

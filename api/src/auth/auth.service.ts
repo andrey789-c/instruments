@@ -6,6 +6,10 @@ import * as bcrypt from "bcrypt";
 import * as crypto from "crypto";
 import { ConfigService } from "@nestjs/config";
 import { TelegramService } from "src/telegram/telegram.service";
+import {
+  AUTH_REMEMBER_MAX_AGE_MS,
+  AUTH_SESSION_MAX_AGE_MS,
+} from "./auth-session.constants";
 
 const OTP_EXPIRY_MS = 10 * 60 * 1000; // 10 минут
 const MAX_ATTEMPTS = 5; // макс попыток ввода кода
@@ -19,8 +23,6 @@ export class AuthService {
     private telegram: TelegramService,
   ) {}
 
-  // ─── Auth ─────────────────────────────────────────────────────────
-
   async validateUser(email: string, pass: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) return null;
@@ -30,14 +32,16 @@ export class AuthService {
     return rest;
   }
 
-  async login(user: any) {
+  async login(user: any, rememberMe?: boolean) {
     const payload = {
       sub: user.id,
       email: user.email,
       role: user.role,
       ownerId: user.ownerId || user.id,
     };
-    return { access_token: this.jwt.sign(payload) };
+    const maxAgeMs = rememberMe ? AUTH_REMEMBER_MAX_AGE_MS : AUTH_SESSION_MAX_AGE_MS;
+    const expiresIn = Math.floor(maxAgeMs / 1000);
+    return { access_token: this.jwt.sign(payload, { expiresIn }) };
   }
 
   async createUser(data: {
@@ -72,7 +76,6 @@ export class AuthService {
         },
       });
     } catch (error) {
-      // P2002 — нарушение уникального ограничения
       if (error?.code === 'P2002') {
         const field = error?.meta?.target?.[0];
         if (field === 'email') {
@@ -87,12 +90,10 @@ export class AuthService {
     }
   }
 
-  // ─── Step 1: отправить OTP в Telegram ─────────────────────────────
 
   async sendOtp(email: string): Promise<void> {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
-    // Не раскрываем, существует ли пользователь
     if (!user) return;
 
     if (!user.telegramId) {
@@ -101,12 +102,10 @@ export class AuthService {
       );
     }
 
-    // Удаляем старые неиспользованные коды
     await this.prisma.passwordResetToken.deleteMany({
       where: { userId: user.id, usedAt: null },
     });
 
-    // Генерируем 6-значный код
     const code = String(Math.floor(100000 + Math.random() * 900000));
     const expiresAt = new Date(Date.now() + OTP_EXPIRY_MS);
 
@@ -116,8 +115,6 @@ export class AuthService {
 
     await this.telegram.sendOtpCode(user.telegramId, code);
   }
-
-  // ─── Step 2: проверить OTP, выдать resetToken ──────────────────────
 
   async verifyOtp(email: string, code: string): Promise<string> {
     const user = await this.prisma.user.findUnique({ where: { email } });
@@ -155,14 +152,12 @@ export class AuthService {
       );
     }
 
-    // Код верный — генерируем одноразовый resetToken и помечаем OTP как использованный
     const resetToken = crypto.randomBytes(32).toString("hex");
 
     await this.prisma.passwordResetToken.update({
       where: { id: record.id },
       data: {
         usedAt: new Date(),
-        // Сохраняем resetToken в поле code (он уже использован как OTP)
         code: `verified:${resetToken}`,
       },
     });
@@ -170,7 +165,6 @@ export class AuthService {
     return resetToken;
   }
 
-  // ─── Step 3: сменить пароль по resetToken ─────────────────────────
 
   private normalizePhone(phone: string): string {
     let digits = phone.replace(/\D/g, '');
@@ -190,8 +184,7 @@ export class AuthService {
         "Сессия сброса недействительна. Начните заново.",
       );
     }
-
-    // resetToken действителен 15 минут после верификации OTP
+    
     const resetExpiry = new Date(record.usedAt!.getTime() + 15 * 60 * 1000);
     if (resetExpiry < new Date()) {
       throw new BadRequestException(

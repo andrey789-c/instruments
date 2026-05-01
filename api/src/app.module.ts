@@ -8,6 +8,7 @@ import { UsersModule } from "./users/users.module";
 import { JwtModule } from "@nestjs/jwt";
 import { TableModule } from './table/table.module';
 import { HistoryModule } from './history/history.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { HistoryModule } from './history/history.module';
     UsersModule,
     TableModule,
     HistoryModule,
+    SubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

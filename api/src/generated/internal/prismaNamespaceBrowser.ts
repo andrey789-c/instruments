@@ -54,7 +54,9 @@ export const ModelName = {
   PhoneVerification: 'PhoneVerification',
   InventoryTable: 'InventoryTable',
   InventoryItem: 'InventoryItem',
-  InventoryTableHistory: 'InventoryTableHistory'
+  InventoryTableHistory: 'InventoryTableHistory',
+  Subscription: 'Subscription',
+  PendingPayment: 'PendingPayment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -152,6 +154,33 @@ export const InventoryTableHistoryScalarFieldEnum = {
 } as const
 
 export type InventoryTableHistoryScalarFieldEnum = (typeof InventoryTableHistoryScalarFieldEnum)[keyof typeof InventoryTableHistoryScalarFieldEnum]
+
+
+export const SubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  plan: 'plan',
+  active: 'active',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+
+export const PendingPaymentScalarFieldEnum = {
+  id: 'id',
+  invId: 'invId',
+  userId: 'userId',
+  plan: 'plan',
+  amount: 'amount',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PendingPaymentScalarFieldEnum = (typeof PendingPaymentScalarFieldEnum)[keyof typeof PendingPaymentScalarFieldEnum]
 
 
 export const SortOrder = {

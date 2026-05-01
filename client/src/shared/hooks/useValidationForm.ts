@@ -254,19 +254,7 @@ export const commonRules = {
 
   strongPassword: {
     required: true,
-    minLength: 8,
-    custom: (value: string) => {
-      if (!/[A-Z]/.test(value)) {
-        return 'Пароль должен содержать заглавную букву';
-      }
-      if (!/[a-z]/.test(value)) {
-        return 'Пароль должен содержать строчную букву';
-      }
-      if (!/[0-9]/.test(value)) {
-        return 'Пароль должен содержать цифру';
-      }
-      return null;
-    },
+    minLength: 6,
   } as ValidationRule,
 
   phone: {

@@ -47,3 +47,13 @@ export type InventoryItem = Prisma.InventoryItemModel
  * 
  */
 export type InventoryTableHistory = Prisma.InventoryTableHistoryModel
+/**
+ * Model Subscription
+ * 
+ */
+export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model PendingPayment
+ * 
+ */
+export type PendingPayment = Prisma.PendingPaymentModel

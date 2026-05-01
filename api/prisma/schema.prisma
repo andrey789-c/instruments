@@ -36,7 +36,11 @@ model User {
 
   PasswordResetToken PasswordResetToken[]
   InventoryTable     InventoryTable[]     @relation("owner")
+
+  subscription     Subscription?
+  pendingPayments  PendingPayment[]
 }
+
 
 model PasswordResetToken {
   id        String    @id @default(uuid())
@@ -97,4 +101,42 @@ model InventoryTableHistory {
   createdAt DateTime @default(now())
 
   table InventoryTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  plan      Plan     @default(PRO)
+  active    Boolean  @default(true)
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PendingPayment {
+  id        String      @id @default(uuid())
+  invId     Int         @unique
+  userId    String
+  plan      Plan        @default(PRO)
+  amount    Int                          // сумма в рублях
+  status    PaymentStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum Plan {
+  PRO
+  ENTERPRISE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
 }
